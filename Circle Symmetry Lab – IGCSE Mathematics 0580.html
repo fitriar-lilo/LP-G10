@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Circle Symmetry Lab – IGCSE Mathematics 0580</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1f1b4d;--violet:#6c4cf1;--sky:#2e9bff;--teal:#0fb5a5;--coral:#ff5d73;--sun:#ffc533;--orange:#ff8a3d;--pink:#ff4fa3;--green:#2fbf71;--muted:#6b6896;--card:#fff}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:'Nunito',system-ui,sans-serif;color:var(--ink);background:linear-gradient(160deg,#f3efff 0%,#eafbf8 55%,#fff6e6 100%);min-height:100vh;line-height:1.5}
+h1,h2,h3,.brand,.lbl{font-family:'Fredoka','Nunito',sans-serif}
+h2{margin:0 0 4px;font-size:1.7rem}h3{margin:0 0 8px;font-size:1.2rem}
+[hidden]{display:none!important}
+.btn{border:0;border-radius:999px;padding:.55rem 1.05rem;font:800 .92rem 'Nunito',sans-serif;cursor:pointer;background:#fff;color:var(--ink);box-shadow:0 2px 0 rgba(31,27,77,.15),0 6px 14px rgba(31,27,77,.08);transition:transform .12s,box-shadow .12s}
+.btn:hover{transform:translateY(-2px)}.btn:active{transform:translateY(1px)}
+.btn.primary{background:linear-gradient(135deg,var(--violet),var(--sky));color:#fff}
+.btn.accent{background:linear-gradient(135deg,var(--orange),var(--coral));color:#fff}
+.btn.small{padding:.38rem .8rem;font-size:.85rem}.btn.big{padding:.85rem 1.6rem;font-size:1.1rem}
+.btn.ghost{background:transparent;box-shadow:none;border:2px dashed #b9b0f5}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+/* gate */
+.gate{min-height:100vh;display:grid;place-items:center;padding:20px;position:relative;overflow:hidden}
+.gate:before,.gate:after{content:"";position:absolute;border-radius:50%;z-index:0;animation:float 9s ease-in-out infinite}
+.gate:before{width:380px;height:380px;background:radial-gradient(circle,#ffc53388,#ffc53300 70%);left:-80px;top:-60px}
+.gate:after{width:460px;height:460px;background:radial-gradient(circle,#6c4cf155,#6c4cf100 70%);right:-120px;bottom:-100px;animation-delay:-4s}
+@keyframes float{50%{transform:translateY(24px) scale(1.06)}}
+.gate-card{position:relative;z-index:1;background:#fff;border-radius:28px;padding:30px 28px;max-width:460px;width:100%;box-shadow:0 20px 60px rgba(76,56,180,.2);text-align:center}
+.gate-card h1{margin:6px 0 2px;font-size:2.1rem;background:linear-gradient(90deg,var(--violet),var(--teal));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--muted);margin:0 0 18px;font-weight:700}
+.gate-card label{display:block;text-align:left;font-weight:800;margin:10px 0 4px}
+.gate-card input{width:100%;padding:.8rem 1rem;border-radius:14px;border:2.5px solid #d9d2ff;font:700 1rem 'Nunito';color:var(--ink);outline:none}
+.gate-card input:focus{border-color:var(--violet);box-shadow:0 0 0 4px #6c4cf122}
+#gateErr{color:var(--coral);font-weight:800;min-height:1.4em;margin:8px 0}
+.gate-note{font-size:.85rem;color:var(--muted);margin-top:14px}
+.linkish{display:inline-block;margin-top:10px;color:var(--violet);font-weight:800;cursor:pointer;text-decoration:underline;font-size:.88rem}
+.spin{animation:spin 12s linear infinite;transform-origin:50% 50%}@keyframes spin{to{transform:rotate(360deg)}}
+/* top */
+.sticky{position:sticky;top:0;z-index:20}
+.top{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;padding:10px 18px;background:linear-gradient(100deg,#4b2fd0,#2e9bff 70%,#0fb5a5);color:#fff}
+.brand{font-weight:600;font-size:1.25rem}.brand small{opacity:.8;font-size:.7em;margin-left:6px}
+.who{background:#ffffff26;padding:4px 12px;border-radius:999px;font-weight:800;font-size:.9rem}
+.prog{display:flex;align-items:center;gap:8px;flex:1;min-width:140px}
+.bar{flex:1;height:12px;background:#ffffff40;border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--sun),#fff);border-radius:99px;transition:width .6s}
+.acts{display:flex;gap:8px;flex-wrap:wrap}
+.tabs{display:flex;gap:6px;padding:8px 14px;background:#fffffff2;backdrop-filter:blur(8px);box-shadow:0 4px 14px rgba(31,27,77,.08);overflow-x:auto}
+.tab{flex:1;min-width:140px;border:0;background:#f1edff;border-radius:14px;padding:.55rem .8rem;font:800 .92rem 'Nunito';color:var(--ink);cursor:pointer;white-space:nowrap}
+.tab.on{background:linear-gradient(135deg,var(--violet),var(--sky));color:#fff;box-shadow:0 6px 14px #6c4cf144}
+.tab .ck{color:var(--green);margin-left:4px}.tab.on .ck{color:var(--sun)}
+main{max-width:1100px;margin:0 auto;padding:18px 14px 60px}
+.panel{display:none}.panel.on{display:block;animation:rise .45s both}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+.hero{border-radius:24px;padding:18px 22px;color:#fff;margin-bottom:16px;position:relative;overflow:hidden}
+.hero p{margin:2px 0 0;opacity:.95;font-weight:700}
+.hero:after{content:"";position:absolute;right:-30px;top:-40px;width:150px;height:150px;border-radius:50%;border:16px solid #ffffff30}
+.c1{background:linear-gradient(120deg,#ff5d73,#ff8a3d)}.c2{background:linear-gradient(120deg,#0fb5a5,#2e9bff)}.c3{background:linear-gradient(120deg,#6c4cf1,#ff4fa3)}.c4{background:linear-gradient(120deg,#ffb100,#ff5d73)}
+.two{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:16px;margin-bottom:16px}
+@media(max-width:860px){.two{grid-template-columns:1fr}}
+.card{background:var(--card);border-radius:22px;padding:16px 18px;box-shadow:0 8px 28px rgba(76,56,180,.11);margin-bottom:16px}
+.two>.card,.two>.side>.card{margin-bottom:0}
+.stage{width:100%;height:auto;display:block;overflow:hidden;border-radius:16px;background:linear-gradient(180deg,#fbfaff,#f1ecff)}
+.lbl{font-weight:600;paint-order:stroke;stroke:#fff;stroke-width:4px;stroke-linejoin:round}
+.cap{text-align:center;font-weight:800;color:var(--muted);margin:8px 0 6px;min-height:1.5em}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.chip-b{border:2.5px solid var(--c,#999);background:#fff;color:var(--ink);border-radius:999px;padding:.35rem .8rem;font:800 .88rem 'Nunito';cursor:pointer;transition:.15s}
+.chip-b.on{background:var(--c);color:#fff;transform:scale(1.06)}
+.term{border-top:8px solid var(--c,#999)}
+.term h3{color:var(--c)}.term .def{font-size:1.08rem;font-weight:700}
+.term ul{padding-left:20px;margin:8px 0}
+.tip{background:#fff7dc;border-radius:12px;padding:8px 12px;font-weight:700;margin-top:8px}
+.tip:before{content:"💡 "}
+table{border-collapse:collapse;width:100%;font-size:.93rem}
+th,td{padding:8px 10px;border-bottom:1px solid #ece8ff;text-align:left}
+th{background:#f4f0ff}
+.dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:6px}
+.finish{display:flex;gap:10px;justify-content:center;margin-top:10px;flex-wrap:wrap}
+.big-idea{border-left:8px solid var(--teal);background:#f0fffc}
+.rule{display:flex;gap:10px;align-items:flex-start;margin:8px 0;font-weight:700}
+.rule b.n{flex:none;width:28px;height:28px;border-radius:50%;background:var(--teal);color:#fff;display:grid;place-items:center;font-family:Fredoka}
+.ctrl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.ctrl input[type=range]{flex:1;min-width:150px;accent-color:var(--violet)}
+.read{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;background:#f4f0ff;border-radius:14px;padding:10px 14px;font-weight:800;margin-top:10px}
+.read .eq{grid-column:1/-1;color:var(--teal)}
+.steps{list-style:none;padding:0;margin:0}
+.steps li{padding:8px 10px;border-radius:12px;margin:5px 0;background:#f6f3ff;opacity:.45;font-weight:700;cursor:pointer;transition:.3s}
+.steps li.past{opacity:.8}.steps li.cur{opacity:1;background:#e5fbf7;box-shadow:inset 5px 0 0 var(--teal)}
+.badge{background:var(--violet);color:#fff;border-radius:999px;padding:2px 10px;font-weight:800;font-size:.8rem;margin-right:8px}
+.exbody{display:grid;grid-template-columns:200px 1fr;gap:14px;align-items:start}
+@media(max-width:620px){.exbody{grid-template-columns:1fr}.exfig{max-width:220px;margin:auto}}
+.exq{font-weight:800;background:#fff7dc;padding:8px 12px;border-radius:12px;margin:0 0 8px}
+.exsteps{margin:0;padding-left:22px}.exsteps li{margin:5px 0;font-weight:600}
+.exsteps li.new{animation:rise .5s both}.exsteps li.final{background:#e6fbef;border-radius:10px;padding:4px 8px;font-weight:800;list-style-position:inside}
+.exbtns{display:flex;gap:8px;margin-top:8px;align-items:center}.done{color:var(--green);font-weight:800}
+.fig{width:100%;height:auto}
+.fig .draw{stroke-dasharray:300;stroke-dashoffset:300;animation:dr 1.4s .2s forwards}@keyframes dr{to{stroke-dashoffset:0}}
+.prac{background:linear-gradient(135deg,#fff7dc,#ffe9ef)}
+.pin{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pin input{width:130px;padding:.55rem .8rem;border-radius:12px;border:2.5px solid #f3c36b;font:800 1rem 'Nunito'}
+.pfeed{font-weight:800;margin-top:8px;min-height:1.4em}.pfeed.ok{color:var(--green)}.pfeed.no{color:var(--coral)}
+/* quiz */
+.qtop{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px}
+.qdots{display:flex;gap:6px;flex-wrap:wrap}
+.qdot{width:36px;height:36px;border-radius:50%;border:2.5px solid #d4ccff;background:#fff;font:800 .9rem Fredoka;cursor:pointer;color:var(--ink)}
+.qdot.cur{border-color:var(--violet);box-shadow:0 0 0 4px #6c4cf124}.qdot.ok{background:var(--green);border-color:var(--green);color:#fff}.qdot.try{background:#ffe3e8;border-color:var(--coral)}
+.qscore{background:var(--ink);color:#fff;border-radius:999px;padding:.4rem 1rem;font-weight:800}
+.qmeta{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:8px;font-weight:800}
+.chip{border-radius:999px;padding:3px 12px;color:#fff;font-size:.82rem}.sec1{background:var(--coral)}.sec2{background:var(--teal)}.sec3{background:var(--violet)}
+.attempts{color:var(--muted)}
+.qtext{font-size:1.15rem;font-weight:800;margin:6px 0 10px}
+.qfig{max-width:230px;margin:0 auto 10px}
+.opts{display:grid;gap:10px}
+.opt{display:flex;align-items:center;gap:12px;text-align:left;border:3px solid #e1dbff;background:#fff;border-radius:16px;padding:.7rem 1rem;font:800 1.02rem 'Nunito';color:var(--ink);cursor:pointer;transition:.15s}
+.opt:hover:not(:disabled){border-color:var(--violet);transform:translateX(4px)}
+.opt .L{flex:none;width:32px;height:32px;border-radius:50%;background:#efeaff;display:grid;place-items:center;font-family:Fredoka}
+.opt .mark{margin-left:auto;font-size:1.3rem}
+.opt.wrong{background:#ffe9ed;border-color:var(--coral);color:#a32a40}.opt.wrong .L{background:var(--coral);color:#fff}
+.opt.good{background:#e3fbed;border-color:var(--green);animation:pop .6s}.opt.good .L{background:var(--green);color:#fff}
+.opt:disabled{cursor:default}.opt.shake{animation:shake .45s}
+@keyframes shake{20%{transform:translateX(-9px)}40%{transform:translateX(9px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+@keyframes pop{40%{transform:scale(1.05)}}
+.fb{margin-top:12px;padding:12px 14px;border-radius:14px;font-weight:700}
+.fb.bad{background:#fff0f2;border:2px solid #ffc4cd}.fb.yes{background:#eafcf1;border:2px solid #b2ecc9}
+.pts{display:inline-block;background:var(--sun);color:var(--ink);border-radius:999px;padding:2px 12px;font-weight:800;animation:pop .7s}
+.qnav{display:flex;justify-content:space-between;margin-top:12px;gap:8px}
+.res-top{display:grid;grid-template-columns:200px 1fr;gap:18px;align-items:center}
+@media(max-width:620px){.res-top{grid-template-columns:1fr;text-align:center}}
+.ring{animation:ringa 1.4s ease-out}@keyframes ringa{from{stroke-dasharray:0 340}}
+.sbar{height:16px;border-radius:99px;background:#eee9ff;overflow:hidden;margin:3px 0 8px}.sbar i{display:block;height:100%;border-radius:99px;animation:grow 1.2s both}
+@keyframes grow{from{width:0}}
+.tag{display:inline-block;border-radius:999px;padding:1px 10px;font-size:.8rem;font-weight:800;color:#fff;margin-left:6px}
+.t-s{background:var(--green)}.t-g{background:var(--sky)}.t-p{background:var(--orange)}
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,40px);background:var(--ink);color:#fff;padding:.7rem 1.2rem;border-radius:999px;font-weight:800;opacity:0;pointer-events:none;transition:.35s;z-index:99;max-width:92vw;text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:98;width:100%;height:100%}
+.warn{background:#fff3cd;color:#7a5600;font-weight:800;padding:6px 14px;text-align:center;font-size:.88rem}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01s!important;transition-duration:.01s!important}}
+</style>
+</head>
+<body>
+<div id="gate" class="gate">
+  <div class="gate-card">
+    <svg width="96" height="96" viewBox="0 0 100 100" aria-hidden="true"><g class="spin"><circle cx="50" cy="50" r="40" fill="#f1ecff" stroke="#6c4cf1" stroke-width="5"/><line x1="10" y1="50" x2="90" y2="50" stroke="#ff5d73" stroke-width="5" stroke-linecap="round"/><line x1="50" y1="50" x2="78" y2="22" stroke="#0fb5a5" stroke-width="5" stroke-linecap="round"/><circle cx="50" cy="50" r="5" fill="#1f1b4d"/></g></svg>
+    <h1>Circle Symmetry Lab</h1>
+    <p class="sub">IGCSE Mathematics 0580 · Symmetry properties of circles</p>
+    <label for="inName">Your name</label>
+    <input id="inName" maxlength="40" autocomplete="name" placeholder="e.g. Aisha Putri">
+    <label for="inClass">Your class</label>
+    <input id="inClass" maxlength="20" placeholder="e.g. 10A">
+    <div id="gateErr" role="alert"></div>
+    <button id="btnStart" class="btn primary big">Start learning →</button>
+    <div><button id="btnResume" class="btn ghost" style="margin-top:10px" hidden></button></div>
+    <div class="gate-note">Your work saves automatically on this device. Type the same name and class later to carry on where you stopped.</div>
+    <label class="linkish">Restore from a backup file<input type="file" id="fileRestore" accept=".json" hidden></label>
+  </div>
+</div>
+
+<div id="app" hidden>
+  <div class="sticky">
+    <header class="top">
+      <div class="brand">◯ Circle Symmetry<small>IGCSE 0580</small></div>
+      <div class="who" id="who"></div>
+      <div class="prog"><div class="bar"><i id="barFill"></i></div><b id="progTxt">0%</b></div>
+      <div class="acts">
+        <button id="btnSave" class="btn small">💾 Save</button>
+        <button id="btnPdf" class="btn small accent">📄 Download PDF</button>
+        <button id="btnBackup" class="btn small" title="Save a backup file of your progress">⬇️ Backup</button>
+      </div>
+    </header>
+    <div id="warn" class="warn" hidden>Browser storage is blocked here, so autosave cannot keep your work after you close the tab. Use “Backup” to save a file, then “Restore” on the start screen.</div>
+    <nav class="tabs" id="tabs">
+      <button class="tab" data-tab="s1">1 · Parts of a circle <span class="ck"></span></button>
+      <button class="tab" data-tab="s2">2 · Perpendicular bisector <span class="ck"></span></button>
+      <button class="tab" data-tab="s3">3 · Angle in a semicircle <span class="ck"></span></button>
+      <button class="tab" data-tab="s4">4 · Assessment <span class="ck"></span></button>
+    </nav>
+  </div>
+
+  <main>
+  <!-- SECTION 1 -->
+  <section id="s1" class="panel">
+    <div class="hero c1"><h2>Section 1 · Parts of a circle</h2><p>Tap a name and watch it come alive. Each part has a simple definition.</p></div>
+    <div class="two">
+      <div class="card">
+        <svg id="stage1" class="stage" viewBox="0 0 400 400" role="img" aria-label="Animated circle diagram"></svg>
+        <div id="cap1" class="cap"></div>
+        <div style="text-align:center"><button id="replay1" class="btn small">↻ Replay animation</button></div>
+      </div>
+      <div class="side">
+        <div id="chips1" class="chips"></div>
+        <div id="termCard" class="card term"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Quick compare: lines and a circle</h3>
+      <table>
+        <tr><th>Line</th><th>Points shared with the circle</th><th>Does it go through the centre?</th></tr>
+        <tr><td><span class="dot" style="background:#ff8a3d"></span><b>Tangent</b></td><td>exactly 1 (touches)</td><td>No</td></tr>
+        <tr><td><span class="dot" style="background:#2e9bff"></span><b>Secant</b></td><td>2 (cuts through, keeps going)</td><td>Sometimes</td></tr>
+        <tr><td><span class="dot" style="background:#0fb5a5"></span><b>Chord</b></td><td>2 (the ends of the segment)</td><td>Sometimes</td></tr>
+        <tr><td><span class="dot" style="background:#6c4cf1"></span><b>Diameter</b></td><td>2 (the ends)</td><td>Always</td></tr>
+        <tr><td><span class="dot" style="background:#ff5d73"></span><b>Radius</b></td><td>1 (the outer end)</td><td>Starts at the centre</td></tr>
+      </table>
+    </div>
+    <div class="finish"><button class="btn primary" data-finish="1">✓ I finished Section 1</button></div>
+  </section>
+
+  <!-- SECTION 2 -->
+  <section id="s2" class="panel">
+    <div class="hero c2"><h2>Section 2 · The perpendicular bisector of a chord</h2><p>A circle is perfectly symmetrical. That symmetry gives us a powerful chord rule.</p></div>
+    <div class="two">
+      <div class="card">
+        <svg id="stage2" class="stage" viewBox="0 0 420 430" role="img" aria-label="Chord and perpendicular from the centre"></svg>
+        <div class="ctrl">
+          <label for="sl2"><b>Chord distance d from O:</b></label>
+          <input type="range" id="sl2" min="1" max="9.5" step="0.5" value="6">
+        </div>
+        <div class="ctrl">
+          <button id="play2" class="btn small primary">▶ Build the proof</button>
+          <button id="prev2" class="btn small">◀</button>
+          <button id="next2" class="btn small">▶</button>
+          <button id="fold2" class="btn small accent">🪞 Fold along OM</button>
+        </div>
+        <div class="read" id="read2"></div>
+      </div>
+      <div class="side">
+        <div class="card big-idea">
+          <h3>The big idea</h3>
+          <div class="rule"><b class="n">1</b><span>The <b>perpendicular from the centre to a chord bisects the chord</b> (cuts it into two equal halves).</span></div>
+          <div class="rule"><b class="n">2</b><span>Converse: a line from the centre to the <b>midpoint</b> of a chord is <b>perpendicular</b> to it.</span></div>
+          <div class="rule"><b class="n">3</b><span>The <b>perpendicular bisector of any chord passes through the centre</b>.</span></div>
+          <div class="tip">Pythagoras link: r² = d² + (½ × chord)²</div>
+        </div>
+        <div class="card" style="margin-top:16px"><h3>Why is it true? (tap a step)</h3><ol class="steps" id="steps2"></ol></div>
+      </div>
+    </div>
+    <h3 style="margin:6px 4px 10px">Worked examples</h3>
+    <div id="ex2"></div>
+    <div class="card prac" id="prac2box"></div>
+    <div class="finish"><button class="btn primary" data-finish="2">✓ I finished Section 2</button></div>
+  </section>
+
+  <!-- SECTION 3 -->
+  <section id="s3" class="panel">
+    <div class="hero c3"><h2>Section 3 · Angle in a semicircle</h2><p>Draw a triangle on a diameter and the angle at the top is always 90°.</p></div>
+    <div class="two">
+      <div class="card">
+        <svg id="stage3" class="stage" viewBox="0 0 420 430" style="touch-action:none;cursor:grab" role="img" aria-label="Draggable point P on a circle"></svg>
+        <div class="ctrl">
+          <button id="auto3" class="btn small primary">⏸ Stop auto-move</button>
+          <span style="font-weight:700;color:var(--muted)">…or drag point P around the circle!</span>
+        </div>
+        <div class="read" id="read3"></div>
+      </div>
+      <div class="side">
+        <div class="card big-idea" style="border-left-color:var(--violet);background:#f6f3ff">
+          <h3>The big idea</h3>
+          <div class="rule"><b class="n" style="background:var(--violet)">1</b><span>If AB is a <b>diameter</b> and P is any other point on the circle, then <b>angle APB = 90°</b>.</span></div>
+          <div class="rule"><b class="n" style="background:var(--violet)">2</b><span>Converse: if a triangle inscribed in a circle has a 90° angle, the side opposite it is a <b>diameter</b>.</span></div>
+        </div>
+        <div class="card" style="margin-top:16px">
+          <h3>Proof, step by step</h3>
+          <svg id="stage3p" class="stage" viewBox="0 0 420 330" style="margin-bottom:10px"></svg>
+          <ol class="steps" id="steps3"></ol>
+          <div class="ctrl"><button id="play3" class="btn small primary">▶ Play proof</button><button id="prev3" class="btn small">◀</button><button id="next3" class="btn small">▶</button></div>
+        </div>
+      </div>
+    </div>
+    <h3 style="margin:6px 4px 10px">Worked examples</h3>
+    <div id="ex3"></div>
+    <div class="card prac" id="prac3box"></div>
+    <div class="finish"><button class="btn primary" data-finish="3">✓ I finished Section 3</button></div>
+  </section>
+
+  <!-- SECTION 4 -->
+  <section id="s4" class="panel">
+    <div class="hero c4"><h2>Section 4 · Assessment</h2><p>10 questions mixing Sections 1–3. Keep trying until you find the right answer: 10 points on the 1st try, 9 on the 2nd, 8 on the 3rd, 7 on the 4th.</p></div>
+    <div id="quizBox"></div>
+  </section>
+  </main>
+</div>
+<canvas id="fx"></canvas>
+<div id="toast" role="status"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+'use strict';
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const STORE_KEY='igcse0580-circle-symmetry-v1';
+const f=n=>(+n).toFixed(1);
+const TERMS=[
+ {id:'radius',name:'Radius',icon:'📏',color:'#ff5d73',def:'A straight line from the centre of the circle to any point on the circle.',facts:['Every radius in the same circle has the same length.','Symbol: r. Plural: radii.','Two radii in a straight line make a diameter.'],tip:'Think “radius = centre → edge”.',cap:'Spin! Every radius has the same length.'},
+ {id:'diameter',name:'Diameter',icon:'↔️',color:'#6c4cf1',def:'A straight line from one side of the circle to the other that passes through the centre.',facts:['d = 2 × r (twice the radius).','It is the longest chord.','It cuts the circle into two equal semicircles.'],tip:'The diameter is a chord that goes through the centre.',cap:'The diameter always goes through the centre O.'},
+ {id:'chord',name:'Chord',icon:'🧵',color:'#0fb5a5',def:'A straight line that joins two points on the circle. It does not have to pass through the centre.',facts:['Both ends are on the circle.','A chord stays inside the circle.','The diameter is the longest chord.'],tip:'A chord is like a guitar string stretched across a circle.',cap:'A chord joins two points on the circle.'},
+ {id:'tangent',name:'Tangent',icon:'🛹',color:'#ff8a3d',def:'A straight line that just touches the circle at exactly one point and does not cut into it.',facts:['The touching point is called the point of contact.','A tangent is at 90° to the radius at the point of contact.','Only one tangent can be drawn at each point of the circle.'],tip:'Picture a bicycle wheel touching a flat road.',cap:'The tangent touches at one point and meets the radius at 90°.'},
+ {id:'secant',name:'Secant',icon:'✂️',color:'#2e9bff',def:'A straight line that cuts the circle at two points and carries on in both directions.',facts:['It crosses the circle twice.','The part inside the circle is a chord.','Slide it away and it becomes a tangent, then misses the circle.'],tip:'Secant sounds like “sect” = cut, like scissors.',cap:'Watch the line slide: miss → tangent → secant.'},
+ {id:'minor',name:'Minor arc',icon:'🌙',color:'#ff4fa3',def:'The shorter curved part of the circle between two points on the circle.',facts:['It is less than half of the circumference.','Its angle at the centre is less than 180°.','A chord AB cuts off a minor arc AB.'],tip:'Minor = the smaller piece.',cap:'The shorter way round from A to B.'},
+ {id:'major',name:'Major arc',icon:'🌍',color:'#2fbf71',def:'The longer curved part of the circle between the same two points.',facts:['It is more than half of the circumference.','Its angle at the centre is more than 180°.','Minor arc + major arc = the whole circle (360°).'],tip:'Major = the bigger piece.',cap:'The longer way round from A to B.'}
+];
+const OVERVIEW_ITEMS=[['Major arc','#2fbf71'],['Minor arc','#ff4fa3'],['Chord','#0fb5a5'],['Diameter','#6c4cf1'],['Radius','#ff5d73'],['Tangent','#ff8a3d'],['Secant','#2e9bff']];
+const S2_STEPS=[
+ 'Start with a circle with centre O.',
+ 'Draw any chord AB.',
+ 'Join O to A and O to B. OA = OB because both are radii.',
+ 'Draw the perpendicular from O to the chord. It meets AB at M, so ∠OMA = ∠OMB = 90°.',
+ 'Triangles OAM and OBM are right-angled, share the side OM and have equal hypotenuses (OA = OB). They are congruent (RHS).',
+ 'So AM = MB. The perpendicular from the centre bisects the chord!'
+];
+const S3_STEPS=[
+ 'AB is a diameter and P is any point on the circle. Join AP and BP to make triangle APB.',
+ 'Draw OP. OA = OB = OP because they are all radii.',
+ 'Triangle OAP is isosceles, so ∠OPA = ∠OAP = x. Triangle OBP is isosceles, so ∠OPB = ∠OBP = y.',
+ 'Angles in triangle ABP add up to 180°: x + y + (x + y) = 180°.',
+ 'So 2(x + y) = 180°, which gives x + y = 90°. Therefore ∠APB = x + y = 90°.'
+];
+
+/* ---------- small figures (used in examples and questions) ---------- */
+function figChord(o){
+  const R=70,cx=100,cy=100,dd=o.d*R,h=Math.sqrt(R*R-dd*dd),y=cy-dd,ax=cx-h,bx=cx+h,L=(x1,y1,x2,y2,c,w,x='')=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="${w}" stroke-linecap="round" ${x}/>`;
+  const T=(x,y,s,c)=>`<text x="${x}" y="${y}" font-size="13" fill="${c||'#1f1b4d'}" text-anchor="middle" class="lbl">${s}</text>`;
+  return `<svg class="fig" viewBox="0 0 200 200"><circle cx="${cx}" cy="${cy}" r="${R}" fill="#f1ecff" stroke="#1f1b4d" stroke-width="2.5"/>`+
+   L(ax,y,bx,y,'#0fb5a5',4,'class="draw"')+L(cx,cy,ax,y,'#ff5d73',2.5)+L(cx,cy,bx,y,'#ff5d73',2.5)+L(cx,cy,cx,y,'#6c4cf1',3,'stroke-dasharray="5 4"')+
+   `<polyline points="${cx},${y+10} ${cx+10},${y+10} ${cx+10},${y}" fill="none" stroke="#1f1b4d" stroke-width="1.5"/><circle cx="${cx}" cy="${cy}" r="3.5" fill="#1f1b4d"/>`+
+   T(ax-9,y-6,'A')+T(bx+9,y-6,'B')+T(cx+12,y-8,'M')+T(cx-10,cy+16,'O')+
+   (o.rl?T(cx-(cx-ax)/2-10,cy-(cy-y)/2+14,o.rl,'#d93a52'):'')+(o.dl?T(cx-13,(cy+y)/2+4,o.dl,'#6c4cf1'):'')+(o.hl?T((ax+cx)/2,y-8,o.hl,'#0a8f83'):'')+`</svg>`;
+}
+function figSemi(o){
+  const R=70,cx=100,cy=125,th=o.theta*Math.PI/180,px=cx+R*Math.cos(th),py=cy-R*Math.sin(th),ax=cx-R,bx=cx+R;
+  const T=(x,y,s,c)=>`<text x="${x}" y="${y}" font-size="13" fill="${c||'#1f1b4d'}" text-anchor="middle" class="lbl">${s}</text>`;
+  const ua=[(ax-px),(cy-py)],ub=[(bx-px),(cy-py)],la=Math.hypot(...ua),lb=Math.hypot(...ub),s=10;
+  const u=[ua[0]/la*s,ua[1]/la*s],v=[ub[0]/lb*s,ub[1]/lb*s];
+  return `<svg class="fig" viewBox="0 0 200 200"><circle cx="${cx}" cy="${cy}" r="${R}" fill="#f1ecff" stroke="#1f1b4d" stroke-width="2.5"/>`+
+   `<polygon points="${ax},${cy} ${bx},${cy} ${px},${py}" fill="#ffc53340"/>`+
+   `<line x1="${ax}" y1="${cy}" x2="${bx}" y2="${cy}" stroke="#6c4cf1" stroke-width="4" stroke-linecap="round" class="draw"/>`+
+   `<line x1="${ax}" y1="${cy}" x2="${px}" y2="${py}" stroke="#ff5d73" stroke-width="3"/><line x1="${bx}" y1="${cy}" x2="${px}" y2="${py}" stroke="#0fb5a5" stroke-width="3"/>`+
+   `<polyline points="${px+u[0]},${py+u[1]} ${px+u[0]+v[0]},${py+u[1]+v[1]} ${px+v[0]},${py+v[1]}" fill="none" stroke="#1f1b4d" stroke-width="1.5"/>`+
+   `<circle cx="${cx}" cy="${cy}" r="3.5" fill="#1f1b4d"/>`+T(ax-10,cy+5,'A')+T(bx+10,cy+5,'B')+T(px,py-9,'P')+T(cx,cy+17,'O')+
+   (o.a?T(ax+26,cy-6,o.a,'#d93a52'):'')+(o.b?T(bx-26,cy-6,o.b,'#0a8f83'):'')+(o.p?T(px,py+(o.theta>180?-22:30),o.p,'#6c4cf1'):'')+`</svg>`;
+}
+
+/* ---------- worked examples ---------- */
+const EX2=[
+ {id:'e21',n:1,title:'Find the distance from the centre',q:'O is the centre of a circle of radius 13 cm. Chord AB is 10 cm long. Find the distance from O to AB.',fig:figChord({d:12/13,rl:'13',dl:'d = ?',hl:'5'}),
+  steps:['Draw OM perpendicular to AB. The perpendicular from the centre bisects the chord, so AM = 10 ÷ 2 = 5 cm.','Triangle OAM is right-angled with hypotenuse OA = 13 cm (a radius).','Pythagoras: OM² = OA² − AM² = 13² − 5² = 169 − 25 = 144.','OM = √144 = <b>12 cm</b>. The distance from O to the chord is 12 cm.']},
+ {id:'e22',n:2,title:'Find the radius',q:'O is the centre. Chord PQ = 16 cm and it is 6 cm from O. Find the radius of the circle.',fig:figChord({d:0.6,rl:'r = ?',dl:'6',hl:'8'}),
+  steps:['The perpendicular from O bisects the chord: PM = 16 ÷ 2 = 8 cm.','In right-angled triangle OMP the two short sides are OM = 6 cm and PM = 8 cm.','OP² = 6² + 8² = 36 + 64 = 100.','OP = √100 = <b>10 cm</b>. The radius is 10 cm.']},
+ {id:'e23',n:3,title:'Find the length of the chord',q:'A circle has radius 17 cm. A chord is 8 cm from the centre. Find the length of the chord.',fig:figChord({d:8/17,rl:'17',dl:'8',hl:'?'}),
+  steps:['Draw the perpendicular from O to the chord. The hypotenuse is the radius = 17 cm and one short side is 8 cm.','(half chord)² = 17² − 8² = 289 − 64 = 225.','Half the chord = √225 = 15 cm.','Chord = 2 × 15 = <b>30 cm</b>. Do not forget to double!']}
+];
+const EX3=[
+ {id:'e31',n:1,title:'Find a missing angle',q:'AB is a diameter of the circle. ∠PAB = 35°. Find ∠PBA.',fig:figSemi({theta:70,a:'35°',b:'?'}),
+  steps:['AB is a diameter, so ∠APB = 90° (angle in a semicircle).','Angles in triangle APB add up to 180°: 35° + 90° + ∠PBA = 180°.','∠PBA = 180° − 35° − 90° = <b>55°</b>.']},
+ {id:'e32',n:2,title:'Use algebra',q:'AB is a diameter. ∠PAB = (2x + 5)° and ∠PBA = (x + 10)°. Find x.',fig:figSemi({theta:110,a:'2x+5',b:'x+10'}),
+  steps:['∠APB = 90° (angle in a semicircle).','The other two angles share the remaining 90°: (2x + 5) + (x + 10) = 90.','3x + 15 = 90, so 3x = 75.','<b>x = 25</b>. Check: ∠PAB = 55°, ∠PBA = 35°, and 55° + 35° = 90° ✓']},
+ {id:'e33',n:3,title:'The converse: find the radius',q:'Triangle ABC has a right angle at C, with AC = 6 cm and BC = 8 cm. All three corners lie on a circle. Find the radius.',fig:figSemi({theta:106,a:'6',b:'8',p:'90°'}).replace('>A<','>A<'),
+  steps:['The right angle is at C, which is on the circle. So the side opposite it, AB, must be a diameter (converse of the semicircle rule).','Pythagoras: AB² = 6² + 8² = 36 + 64 = 100, so AB = 10 cm.','The diameter is 10 cm, so the radius = 10 ÷ 2 = <b>5 cm</b>.']}
+];
+const PRAC={
+ p2:{q:'O is the centre of a circle with radius 15 cm. A chord is 24 cm long. How far is the chord from O?',ans:9,unit:'cm',hint:'Half the chord is 12 cm. Then find 15² − 12².',exp:'Half chord = 12. d² = 15² − 12² = 225 − 144 = 81, so d = 9 cm.'},
+ p3:{q:'AB is a diameter of a circle. P is on the circle and ∠PBA = 63°. Find ∠PAB.',ans:27,unit:'°',hint:'The angle at P is 90°, and the three angles add up to 180°.',exp:'∠APB = 90°, so ∠PAB = 180° − 90° − 63° = 27°.'}
+};
+
+/* ---------- assessment ---------- */
+const SECN={1:'Parts of a circle',2:'Perpendicular bisector',3:'Angle in a semicircle'};
+const Q=[
+ {sec:1,q:'Which of these is the longest chord of a circle?',o:['A radius','A diameter','A tangent','A minor arc'],ans:1,hint:'The longest chord goes through the centre.',exp:'The diameter is a chord that passes through the centre, so it is the longest chord (d = 2r).'},
+ {sec:2,fig:figChord({d:0.55}),q:'O is the centre of a circle. OM is perpendicular to chord AB at M. Which statement is always true?',o:['AM = OM','AM = MB','OM = AB','OA = AM'],ans:1,hint:'The perpendicular from the centre cuts the chord into two parts that are…?',exp:'The perpendicular from the centre bisects the chord, so M is the midpoint and AM = MB.'},
+ {sec:3,fig:figSemi({theta:105,p:'?'}),q:'AB is a diameter of the circle and P is on the circle. What is the size of angle APB?',o:['45°','60°','90°','180°'],ans:2,hint:'Think “angle in a semicircle”.',exp:'The angle in a semicircle is always 90°.'},
+ {sec:1,q:'A straight line cuts a circle at two points and carries on in both directions. What is it called?',o:['Tangent','Chord','Radius','Secant'],ans:3,hint:'A tangent touches once. A chord stops at the circle.',exp:'A secant cuts the circle twice and continues. The part inside the circle is a chord.'},
+ {sec:2,fig:figChord({d:0.6,rl:'5',dl:'3'}),q:'The radius of a circle is 5 cm. A chord is 3 cm from the centre. How long is the chord?',o:['4 cm','8 cm','6 cm','10 cm'],ans:1,hint:'Use Pythagoras to find half the chord, then double it.',exp:'Half chord² = 5² − 3² = 16, so half chord = 4 cm. The whole chord is 2 × 4 = 8 cm.'},
+ {sec:3,fig:figSemi({theta:76,a:'38°',b:'?'}),q:'AB is a diameter and P is on the circle. Angle PAB = 38°. Find angle PBA.',o:['52°','38°','142°','128°'],ans:0,hint:'∠APB = 90°, and the angles in a triangle add to 180°.',exp:'∠APB = 90°, so ∠PBA = 180° − 90° − 38° = 52°.'},
+ {sec:1,q:'A tangent touches a circle at T and O is the centre. What is the angle between the tangent and the radius OT?',o:['45°','60°','180°','90°'],ans:3,hint:'Picture a wheel resting on a flat road.',exp:'A tangent is always perpendicular (90°) to the radius at the point of contact.'},
+ {sec:2,fig:figChord({d:5/13,rl:'13',dl:'?',hl:'12'}),q:'A chord AB of length 24 cm is in a circle of radius 13 cm. Find the distance from the centre O to AB.',o:['5 cm','7 cm','12 cm','18.5 cm'],ans:0,hint:'Half the chord is 12 cm. Use Pythagoras with the radius as the hypotenuse.',exp:'d² = 13² − 12² = 169 − 144 = 25, so d = 5 cm.'},
+ {sec:3,q:'A right-angled triangle with sides 6 cm, 8 cm and 10 cm is drawn inside a circle so that all three corners touch the circle. What is the radius of the circle?',o:['10 cm','5 cm','4.8 cm','6 cm'],ans:1,hint:'The hypotenuse, opposite the right angle, is a diameter.',exp:'The 90° angle means the hypotenuse (10 cm) is a diameter, so the radius is 10 ÷ 2 = 5 cm.'},
+ {sec:1,q:'Chord AB makes an angle of 110° at the centre O. What angle at the centre does the major arc AB make?',o:['70°','110°','250°','290°'],ans:2,hint:'The minor and major arcs together make a full turn.',exp:'The major arc is the rest of the circle: 360° − 110° = 250°.'}
+];
+const SEC_TIPS={1:'Re-read the names: tangent touches once (90° to the radius), secant cuts twice, chord stops at the circle, diameter goes through the centre.',2:'Always draw the perpendicular from the centre, halve the chord, then use Pythagoras: r² = d² + (half chord)².',3:'Spot the diameter first. Then the angle opposite it is 90°, and the other two angles add up to 90°.'};
+
+/* ---------- storage ---------- */
+let storageOK=true, DB=readDB(), S=null;
+function readDB(){try{const v=localStorage.getItem(STORE_KEY);if(v){const o=JSON.parse(v);if(o&&o.profiles)return o}}catch(e){storageOK=false}return {profiles:{},last:null}}
+function writeDB(){try{localStorage.setItem(STORE_KEY,JSON.stringify(DB));return true}catch(e){storageOK=false;return false}}
+const pid=(n,c)=>n.trim().toLowerCase().replace(/\s+/g,' ')+'|'+c.trim().toLowerCase();
+function newProfile(n,c){return {id:pid(n,c),name:n.trim(),cls:c.trim(),saved:null,done:{},tab:'s1',qi:0,view:'q',quiz:{},ex:{},prac:{},history:[],term:'all',s2d:6,s2step:5,p3step:4}}
+function save(manual){
+  if(!S)return false;
+  S.saved=Date.now();DB.profiles[S.id]=S;DB.last=S.id;
+  const ok=writeDB();
+  $('#warn').hidden=ok||storageOK;
+  if(manual)toast(ok?'💾 Saved at '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'⚠️ Could not save in this browser. Use Backup instead.');
+  return ok;
+}
+let saveT;function touch(){clearTimeout(saveT);saveT=setTimeout(()=>save(false),350);updateProgress()}
+window.addEventListener('pagehide',()=>save(false));
+document.addEventListener('visibilitychange',()=>{if(document.hidden)save(false)});
+
+/* ---------- toast & confetti ---------- */
+let toastT;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),2600)}
+const fx=$('#fx'),fctx=fx.getContext('2d');let parts=[],fxRun=false;
+function sizeFx(){fx.width=innerWidth;fx.height=innerHeight}sizeFx();addEventListener('resize',sizeFx);
+function burst(x,y,n=70){
+  const cols=['#ff5d73','#ffc533','#0fb5a5','#6c4cf1','#2e9bff','#ff4fa3','#2fbf71'];
+  for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,v=3+Math.random()*7;parts.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-4,g:.22,s:5+Math.random()*6,r:Math.random()*6,vr:(Math.random()-.5)*.4,c:cols[i%cols.length],life:70+Math.random()*30,sh:Math.random()<.4})}
+  if(!fxRun){fxRun=true;requestAnimationFrame(fxLoop)}
+}
+function fxLoop(){
+  fctx.clearRect(0,0,fx.width,fx.height);
+  parts=parts.filter(p=>p.life>0);
+  for(const p of parts){p.x+=p.vx;p.y+=p.vy;p.vy+=p.g;p.vx*=.99;p.r+=p.vr;p.life--;fctx.save();fctx.translate(p.x,p.y);fctx.rotate(p.r);fctx.globalAlpha=Math.min(1,p.life/30);fctx.fillStyle=p.c;
+    if(p.sh){fctx.beginPath();fctx.arc(0,0,p.s/2,0,7);fctx.fill()}else fctx.fillRect(-p.s/2,-p.s/3,p.s,p.s/1.5);fctx.restore()}
+  if(parts.length)requestAnimationFrame(fxLoop);else{fxRun=false;fctx.clearRect(0,0,fx.width,fx.height)}
+}
+
+/* ---------- gate ---------- */
+function showResume(){
+  const b=$('#btnResume'),p=DB.last&&DB.profiles[DB.last];
+  if(p){b.hidden=false;b.textContent='Continue as '+p.name+' ('+p.cls+')';b.onclick=()=>enter(p,true)}else b.hidden=true;
+}
+$('#btnStart').onclick=()=>{
+  const n=$('#inName').value,c=$('#inClass').value;
+  if(n.trim().length<2||!c.trim()){$('#gateErr').textContent='Please write your name and your class first.';return}
+  $('#gateErr').textContent='';
+  const id=pid(n,c);
+  if(DB.profiles[id])enter(DB.profiles[id],true);else enter(newProfile(n,c),false);
+};
+['inName','inClass'].forEach(i=>$('#'+i).addEventListener('keydown',e=>{if(e.key==='Enter')$('#btnStart').click()}));
+$('#fileRestore').onchange=e=>{
+  const file=e.target.files[0];if(!file)return;
+  const r=new FileReader();r.onload=()=>{try{const p=JSON.parse(r.result);if(!p||!p.name||!p.cls||!p.quiz)throw 0;p.id=pid(p.name,p.cls);enter(p,true)}catch(x){$('#gateErr').textContent='That file is not a valid backup.'}};r.readAsText(file);
+};
+function enter(p,returning){
+  S=p;$('#gate').hidden=true;$('#app').hidden=false;
+  $('#who').textContent='👤 '+S.name+' · '+S.cls;
+  save(false);initUI();go(S.tab||'s1');
+  toast(returning&&(S.saved||Object.keys(S.quiz).length||Object.keys(S.done).length)?'Welcome back, '+S.name+'! Your work is restored.':'Welcome, '+S.name+'! Let’s explore circles.');
+}
+
+/* ---------- navigation & progress ---------- */
+let curTab='s1',t0=performance.now(),termT0=0,stepT2=0,stepT3=0;
+function go(tab){
+  curTab=tab;S.tab=tab;
+  $$('.panel').forEach(p=>p.classList.toggle('on',p.id===tab));
+  $$('.tab').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
+  const nowT=(performance.now()-t0)/1000;
+  if(tab==='s1')termT0=nowT;
+  if(tab==='s2')stepT2=nowT-9;
+  if(tab==='s3')stepT3=nowT-9;
+  if(tab==='s4')renderQuiz();
+  scrollTo({top:0,behavior:'smooth'});touch();
+}
+function doneQ(){return Object.values(S.quiz).filter(x=>x.d).length}
+function updateProgress(){
+  const secs=[1,2,3].filter(i=>S.done[i]).length,p=Math.round((secs+doneQ()/10)/4*100);
+  $('#barFill').style.width=p+'%';$('#progTxt').textContent=p+'%';
+  $$('.tab').forEach(b=>{const k=b.dataset.tab;const ck=$('.ck',b);ck.textContent=(k==='s4'?doneQ()===10:S.done[k[1]])?'✓':''});
+}
+$('#tabs').addEventListener('click',e=>{const b=e.target.closest('.tab');if(b)go(b.dataset.tab)});
+document.addEventListener('click',e=>{
+  const fin=e.target.closest('[data-finish]');
+  if(fin){const n=+fin.dataset.finish;S.done[n]=true;toast('🎉 Section '+n+' complete!');burst(innerWidth/2,innerHeight/2,50);go('s'+(n+1))}
+});
+$('#btnSave').onclick=()=>save(true);
+$('#btnBackup').onclick=async()=>{
+  const d=await getDL();if(!d){toast('Backup download is not available in this view.');return}
+  save(false);
+  try{await d.save({filename:'circle-symmetry-'+S.name.replace(/\W+/g,'_')+'.json',data:JSON.stringify(S)});toast('✅ Backup saved')}catch(e){if(e&&e.code!=='declined')toast('Could not save the backup.')}
+};
+let DLp;function getDL(){if(!DLp)DLp=(async()=>{try{return window.claude?await window.claude.use('downloads'):null}catch(e){return null}})();return DLp}
+
+/* ---------- examples & practice ---------- */
+let lastRev=null;
+function renderEx(boxId,list){
+  $(boxId).innerHTML=list.map(ex=>{
+    const n=S.ex[ex.id]||0,all=n===ex.steps.length;
+    return `<div class="card"><div style="margin-bottom:8px"><span class="badge">Example ${ex.n}</span><b>${ex.title}</b></div><div class="exbody"><div class="exfig">${ex.fig}</div><div><p class="exq">${ex.q}</p><ol class="exsteps">${ex.steps.slice(0,n).map((s,i)=>`<li class="${i===n-1&&lastRev===ex.id?'new':''} ${all&&i===n-1?'final':''}">${s}</li>`).join('')}</ol><div class="exbtns">${all?'<span class="done">✓ Solved!</span>':`<button class="btn small primary" data-rev="${ex.id}">Show step ${n+1} of ${ex.steps.length}</button>`}${n?`<button class="btn small" data-hide="${ex.id}">↺ Hide steps</button>`:''}</div></div></div></div>`;
+  }).join('');
+}
+document.addEventListener('click',e=>{
+  const r=e.target.closest('[data-rev]'),h=e.target.closest('[data-hide]');
+  if(!r&&!h)return;
+  const id=(r||h).dataset.rev||(r||h).dataset.hide,list=id[1]==='2'?EX2:EX3,ex=list.find(x=>x.id===id);
+  if(r){S.ex[id]=Math.min(ex.steps.length,(S.ex[id]||0)+1);lastRev=id}else{S.ex[id]=0;lastRev=null}
+  renderEx(id[1]==='2'?'#ex2':'#ex3',list);touch();
+});
+function renderPrac(key,box){
+  const p=PRAC[key],st=S.prac[key]||(S.prac[key]={ok:false,tries:0});
+  $(box).innerHTML=`<h3>🎯 Your turn</h3><p style="font-weight:800;margin:0 0 8px">${p.q}</p><div class="pin"><input type="number" step="any" id="in_${key}" placeholder="answer" ${st.ok?'disabled':''}><b>${p.unit}</b><button class="btn small primary" data-chk="${key}" ${st.ok?'disabled':''}>Check</button><button class="btn small" data-hint="${key}">💡 Hint</button></div><div class="pfeed ${st.ok?'ok':''}" id="fb_${key}">${st.ok?'✅ Correct! '+p.exp:''}</div>`;
+}
+document.addEventListener('click',e=>{
+  const c=e.target.closest('[data-chk]'),h=e.target.closest('[data-hint]');
+  if(c){const k=c.dataset.chk,p=PRAC[k],v=parseFloat($('#in_'+k).value),fb=$('#fb_'+k),st=S.prac[k];
+    if(isNaN(v)){fb.className='pfeed no';fb.textContent='Type a number first.';return}
+    st.tries++;
+    if(Math.abs(v-p.ans)<0.05){st.ok=true;renderPrac(k,'#prac'+k[1]+'box');burst(innerWidth/2,innerHeight/2,60)}else{fb.className='pfeed no';fb.textContent='Not yet — check your working and try again.'}
+    touch()}
+  if(h){const k=h.dataset.hint,fb=$('#fb_'+k);fb.className='pfeed';fb.textContent='💡 '+PRAC[k].hint}
+});
+
+/* ---------- init ---------- */
+function initUI(){
+  // chips
+  const chips=[{id:'all',name:'🗺️ Overview',color:'#1f1b4d'}].concat(TERMS.map(t=>({id:t.id,name:t.icon+' '+t.name,color:t.color})));
+  $('#chips1').innerHTML=chips.map(c=>`<button class="chip-b" style="--c:${c.color}" data-term="${c.id}">${c.name}</button>`).join('');
+  setTerm(S.term||'all',false);
+  renderEx('#ex2',EX2);renderEx('#ex3',EX3);renderPrac('p2','#prac2box');renderPrac('p3','#prac3box');
+  $('#sl2').value=S.s2d;renderSteps2();renderSteps3();updateRead2();
+  getDL();updateProgress();
+}
+$('#chips1').addEventListener('click',e=>{const b=e.target.closest('.chip-b');if(b)setTerm(b.dataset.term,true)});
+$('#replay1').onclick=()=>{termT0=(performance.now()-t0)/1000};
+function setTerm(id,reset){
+  S.term=id;termT0=(performance.now()-t0)/1000;
+  $$('#chips1 .chip-b').forEach(b=>b.classList.toggle('on',b.dataset.term===id));
+  const tc=$('#termCard');
+  if(id==='all'){
+    tc.style.setProperty('--c','#1f1b4d');$('#cap1').textContent='Seven key words, one circle. Pick one to zoom in!';
+    tc.innerHTML=`<h3 style="color:#1f1b4d">🗺️ Meet the parts</h3><p class="def">Every circle has these parts. Tap a coloured name to learn it.</p>`+OVERVIEW_ITEMS.map(([n,c])=>`<div style="margin:6px 0;font-weight:800"><span class="dot" style="background:${c}"></span>${n}</div>`).join('')+`<div class="tip">Look for a tangent that touches once and a secant that cuts twice.</div>`;
+  }else{
+    const t=TERMS.find(x=>x.id===id);tc.style.setProperty('--c',t.color);$('#cap1').textContent=t.cap;
+    tc.innerHTML=`<h3>${t.icon} ${t.name}</h3><p class="def">${t.def}</p><ul>${t.facts.map(x=>`<li>${x}</li>`).join('')}</ul><div class="tip">${t.tip}</div>`;
+  }
+  if(reset)touch();
+}
+showResume();
+
+/* ---------- main loop ---------- */
+function loop(ts){
+  const t=(ts-t0)/1000;
+  if(S&&!$('#app').hidden){
+    try{
+      if(curTab==='s1')draw1(t);
+      else if(curTab==='s2')draw2(t);
+      else if(curTab==='s3'){draw3(t);draw3p(t)}
+    }catch(err){console.error(err)}
+  }
+  requestAnimationFrame(loop);
+}
+
+/* ---------- Section 1 drawing ---------- */
+const CX=200,CY=200,R=130,RAD=Math.PI/180;
+const P1=(a,r=R)=>[CX+r*Math.cos(a*RAD),CY-r*Math.sin(a*RAD)];
+const TX=(x,y,s,c,sz,an)=>`<text x="${f(x)}" y="${f(y)}" fill="${c||'#1f1b4d'}" font-size="${sz||16}" text-anchor="${an||'middle'}" class="lbl">${s}</text>`;
+const LN=(p,q,c,w,x)=>`<line x1="${f(p[0])}" y1="${f(p[1])}" x2="${f(q[0])}" y2="${f(q[1])}" stroke="${c}" stroke-width="${w}" stroke-linecap="round" ${x||''}/>`;
+const DOT=(p,c,r)=>`<circle cx="${f(p[0])}" cy="${f(p[1])}" r="${r||6}" fill="${c}" stroke="#fff" stroke-width="2"/>`;
+function arcPath(a0,a1,col,w,prog,op,rad){
+  rad=rad||R;const x0=CX+rad*Math.cos(a0*RAD),y0=CY-rad*Math.sin(a0*RAD),x1=CX+rad*Math.cos(a1*RAD),y1=CY-rad*Math.sin(a1*RAD),large=(a1-a0)>180?1:0;
+  return `<path d="M${f(x0)} ${f(y0)} A${rad} ${rad} 0 ${large} 0 ${f(x1)} ${f(y1)}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round" pathLength="100" stroke-dasharray="${f(prog*100)} 100" opacity="${op==null?1:op}"/>`;
+}
+const stage1=$('#stage1');
+function base1(){return `<defs><radialGradient id="cf" cx="40%" cy="35%"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#e7e0ff"/></radialGradient></defs><circle cx="200" cy="200" r="130" fill="url(#cf)" stroke="#1f1b4d" stroke-width="3.5"/>`}
+const centerO=()=>`<circle cx="200" cy="200" r="5.5" fill="#1f1b4d"/>`+TX(186,222,'O');
+function ext(p,q,e){const dx=q[0]-p[0],dy=q[1]-p[1],l=Math.hypot(dx,dy);return [[p[0]-dx/l*e,p[1]-dy/l*e],[q[0]+dx/l*e,q[1]+dy/l*e]]}
+function draw1(t){
+  const u=t-termT0,k=S.term;let s=base1();
+  if(k==='all'){
+    const a=i=>Math.min(1,Math.max(0,(u-i*0.8)/0.6));
+    s+=arcPath(0,360,'#2fbf71',8,1,.5*a(0));
+    s+=arcPath(200,260,'#ff4fa3',10,a(1),1);
+    const A=P1(200),B=P1(260);s+=LN(A,B,'#0fb5a5',5,`opacity="${a(2)}"`);
+    s+=LN(P1(180),P1(0),'#6c4cf1',5,`opacity="${a(3)}"`);
+    s+=LN([200,200],P1(-50),'#ff5d73',5,`opacity="${a(4)}"`);
+    const tp=P1(30),dx=-Math.sin(30*RAD),dy=-Math.cos(30*RAD);
+    s+=LN([tp[0]-dx*95,tp[1]-dy*95],[tp[0]+dx*95,tp[1]+dy*95],'#ff8a3d',5,`opacity="${a(5)}"`);
+    const [e1,e2]=ext(P1(165),P1(105),36);s+=LN(e1,e2,'#2e9bff',5,`opacity="${a(6)}"`);
+    s+=`<g opacity="${a(5)}">${DOT(tp,'#ff8a3d',6)}</g><g opacity="${a(6)}">${DOT(P1(165),'#2e9bff',5)}${DOT(P1(105),'#2e9bff',5)}</g><g opacity="${a(2)}">${DOT(A,'#0fb5a5',5)}${DOT(B,'#0fb5a5',5)}</g>`;
+    s+=`<g opacity="${a(0)}">${TX(38,226,'major arc','#1f9a5b',14)}</g><g opacity="${a(1)}">${TX(92,348,'minor arc','#d6338a',14)}</g><g opacity="${a(2)}">${TX(128,262,'chord','#0a8f83',14)}</g>`;
+    s+=`<g opacity="${a(3)}">${TX(268,190,'diameter','#6c4cf1',14)}</g><g opacity="${a(4)}">${TX(262,250,'radius','#e0334c',14)}</g><g opacity="${a(5)}">${TX(352,236,'tangent','#e8700f',14)}</g><g opacity="${a(6)}">${TX(140,36,'secant','#1d7fd8',14)}</g>`;
+  }else if(k==='radius'){
+    const a=u*45,p=P1(a);
+    for(let i=1;i<4;i++)s+=LN([200,200],P1(a+i*90),'#ff5d73',3,'opacity=".25"');
+    s+=LN([200,200],p,'#ff5d73',7);
+    const mx=(200+p[0])/2,my=(200+p[1])/2,l=Math.hypot(p[0]-200,p[1]-200),nx=-(p[1]-200)/l*18,ny=(p[0]-200)/l*18;
+    s+=TX(mx+nx,my+ny+5,'r','#d93a52',22)+DOT(p,'#ff5d73',8);
+  }else if(k==='diameter'){
+    const a=u*35,p1=P1(a),p2=P1(a+180);
+    s+=LN(p1,p2,'#6c4cf1',7)+DOT(p1,'#6c4cf1',7)+DOT(p2,'#6c4cf1',7);
+    [p1,p2].forEach(p=>{const l=Math.hypot(p[0]-200,p[1]-200),nx=-(p[1]-200)/l*18,ny=(p[0]-200)/l*18;s+=TX((200+p[0])/2+nx,(200+p[1])/2+ny+5,'r','#d93a52',20)});
+    s+=TX(200,386,'d = r + r = 2r','#6c4cf1',20);
+  }else if(k==='chord'){
+    const aA=205+18*Math.sin(u*.9),aB=335-18*Math.sin(u*.7),A=P1(aA),B=P1(aB);
+    s+=LN(P1(180),P1(0),'#6c4cf1',3,'stroke-dasharray="7 7" opacity=".4"')+TX(200,186,'diameter (longest chord)','#6c4cf1',13);
+    s+=LN(A,B,'#0fb5a5',7)+DOT(A,'#0fb5a5',8)+DOT(B,'#0fb5a5',8)+TX(A[0]-16,A[1]+6,'A','#0a8f83',20)+TX(B[0]+16,B[1]+6,'B','#0a8f83',20)+TX((A[0]+B[0])/2,(A[1]+B[1])/2+26,'chord AB','#0a8f83',17);
+  }else if(k==='tangent'){
+    const a=60+u*28,p=P1(a),dx=-Math.sin(a*RAD),dy=-Math.cos(a*RAD),ux=(200-p[0])/R,uy=(200-p[1])/R,q=15;
+    s+=LN([200,200],p,'#ff5d73',4,'stroke-dasharray="6 5"');
+    s+=LN([p[0]-dx*120,p[1]-dy*120],[p[0]+dx*120,p[1]+dy*120],'#ff8a3d',7);
+    s+=`<polyline points="${f(p[0]+ux*q)},${f(p[1]+uy*q)} ${f(p[0]+ux*q+dx*q)},${f(p[1]+uy*q+dy*q)} ${f(p[0]+dx*q)},${f(p[1]+dy*q)}" fill="#ffffffaa" stroke="#1f1b4d" stroke-width="2"/>`;
+    s+=DOT(p,'#ff8a3d',8)+TX(p[0]+ux*38+dx*26,p[1]+uy*38+dy*26+5,'90°','#1f1b4d',15)+TX(Math.min(Math.max(p[0]-dx*110-dy*0,30),370),Math.min(Math.max(p[1]-dy*110-12,20),390),'tangent','#e8700f',17);
+    s+=TX(200+(p[0]-200)*1.28,Math.min(396,200+(p[1]-200)*1.28+(p[1]>200?18:-8)),'point of contact','#6b6896',12);
+  }else if(k==='secant'){
+    const ph=-20*RAD,ux=Math.cos(ph),uy=Math.sin(ph),nx=-uy,ny=ux,d=175*Math.sin(u*.55),cx=200+d*nx,cy=200+d*ny,ad=Math.abs(d);
+    const a=[cx-300*ux,cy-300*uy],b=[cx+300*ux,cy+300*uy];
+    let col='#2e9bff',msg='The line misses the circle';
+    if(ad>R+2){col='#9a96c4';msg='The line misses the circle'}else if(ad>=R-2){col='#ff8a3d';msg='Tangent: touches at ONE point'}else msg='Secant: cuts at TWO points';
+    s+=LN(a,b,col,6,ad>R+2?'stroke-dasharray="9 7"':'');
+    if(ad<R-2){const h=Math.sqrt(R*R-d*d),p1=[cx-h*ux,cy-h*uy],p2=[cx+h*ux,cy+h*uy];s+=LN(p1,p2,'#0fb5a5',9)+DOT(p1,'#fff',8)+DOT(p2,'#fff',8)+`<circle cx="${f(p1[0])}" cy="${f(p1[1])}" r="5" fill="#2e9bff"/><circle cx="${f(p2[0])}" cy="${f(p2[1])}" r="5" fill="#2e9bff"/>`}
+    else if(ad>=R-2&&ad<=R+2)s+=DOT([cx,cy],'#ff8a3d',8);
+    s+=`<rect x="60" y="8" width="280" height="30" rx="15" fill="#fff" opacity=".9"/>`+TX(200,29,msg,'#1f1b4d',16);
+  }else if(k==='minor'||k==='major'){
+    const w=22*Math.sin(u*.5),aA=150+w,aB=30-w,A=P1(aA),B=P1(aB),prog=Math.min(1,u/1.6),mi=k==='minor';
+    s+=arcPath(aA,aB+360,'#2fbf71',mi?5:11,mi?1:prog,mi?.25:1);
+    s+=arcPath(aB,aA,'#ff4fa3',mi?11:5,mi?prog:1,mi?1:.25);
+    s+=LN([200,200],A,'#1f1b4d',2.5,'stroke-dasharray="5 4" opacity=".6"')+LN([200,200],B,'#1f1b4d',2.5,'stroke-dasharray="5 4" opacity=".6"')+LN(A,B,'#1f1b4d',3.5);
+    s+=mi?arcPath(aB,aA,'#ff4fa3',3,1,1,34):arcPath(aA,aB+360,'#2fbf71',3,1,1,34);
+    s+=DOT(A,'#1f1b4d',6)+DOT(B,'#1f1b4d',6)+TX(P1(aA,R+20)[0],P1(aA,R+20)[1]+6,'A',null,20)+TX(P1(aB,R+20)[0],P1(aB,R+20)[1]+6,'B',null,20);
+    s+=mi?TX(200,44,'minor arc AB','#d6338a',18)+TX(200,152,'< 180°','#d6338a',15):TX(200,372,'major arc AB','#1f9a5b',18)+TX(200,262,'> 180°','#1f9a5b',15);
+  }
+  stage1.innerHTML=s+centerO();
+}
+
+/* ---------- Section 2 ---------- */
+const stage2=$('#stage2'),fold={on:false,t0:0,msg:false};
+let s2auto=null;
+function renderSteps2(){
+  $('#steps2').innerHTML=S2_STEPS.map((s,i)=>`<li data-s2="${i}" class="${i===S.s2step?'cur':i<S.s2step?'past':''}">${i+1}. ${s}</li>`).join('');
+}
+function setStep2(n){S.s2step=Math.max(0,Math.min(5,n));stepT2=(performance.now()-t0)/1000;renderSteps2();touch()}
+$('#steps2').addEventListener('click',e=>{const li=e.target.closest('li');if(li){clearInterval(s2auto);setStep2(+li.dataset.s2)}});
+$('#prev2').onclick=()=>{clearInterval(s2auto);setStep2(S.s2step-1)};
+$('#next2').onclick=()=>{clearInterval(s2auto);setStep2(S.s2step+1)};
+$('#play2').onclick=()=>{clearInterval(s2auto);fold.on=false;setStep2(0);s2auto=setInterval(()=>{if(S.s2step>=5)clearInterval(s2auto);else setStep2(S.s2step+1)},2600)};
+$('#fold2').onclick=()=>{clearInterval(s2auto);fold.on=true;fold.t0=(performance.now()-t0)/1000;fold.msg=false};
+$('#sl2').oninput=e=>{S.s2d=+e.target.value;updateRead2();touch()};
+function updateRead2(){
+  const d=S.s2d,h=Math.sqrt(100-d*d);
+  $('#read2').innerHTML=`<span>r = 10 cm</span><span>d = OM = ${f(d)} cm</span><span>AM = ${f(h)} cm</span><span>MB = ${f(h)} cm</span><span class="eq">AM = MB ✓ &nbsp; (r² = d² + AM²: 100 = ${f(d*d)} + ${f(h*h)})</span>`;
+}
+function draw2(t){
+  const cx=210,cy=215,Rr=140,k=14,d=S.s2d,h=Math.sqrt(100-d*d),y=cy-d*k,ax=cx-h*k,bx=cx+h*k;
+  const lv=fold.on?5:S.s2step,ap=n=>lv>n?1:lv===n?Math.min(1,(t-stepT2)/.8):0;
+  const ln=(x1,y1,x2,y2,c,w,p,ex)=>p>0?`<line x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}" stroke="${c}" stroke-width="${w}" stroke-linecap="round" pathLength="1" stroke-dasharray="${ex||'1'}" ${ex?'':`stroke-dashoffset="${f(1-p)}"`} opacity="${p>0.02?1:0}"/>`:'';
+  const tx=(x,y,s,c,p,sz)=>p>0?`<text x="${f(x)}" y="${f(y)}" text-anchor="middle" font-size="${sz||18}" fill="${c||'#1f1b4d'}" opacity="${p}" class="lbl">${s}</text>`:'';
+  let s=`<circle cx="${cx}" cy="${cy}" r="${Rr}" fill="#f1ecff" stroke="#1f1b4d" stroke-width="3.5"/>`;
+  const p4=ap(4);
+  if(p4>0)s+=`<polygon points="${cx},${cy} ${f(ax)},${f(y)} ${cx},${f(y)}" fill="#ff5d73" opacity="${.25*p4}"/><polygon points="${cx},${cy} ${f(bx)},${f(y)} ${cx},${f(y)}" fill="#0fb5a5" opacity="${.28*p4}"/>`;
+  s+=ln(ax,y,bx,y,'#0fb5a5',6,ap(1));
+  s+=ln(cx,cy,ax,y,'#ff5d73',4,ap(2))+ln(cx,cy,bx,y,'#ff5d73',4,ap(2));
+  s+=ln(cx,cy,cx,y,'#6c4cf1',4,ap(3),'7 6');
+  const p3=ap(3);if(p3>0)s+=`<polyline points="${cx},${f(y+14)} ${cx+14},${f(y+14)} ${cx+14},${f(y)}" fill="none" stroke="#1f1b4d" stroke-width="2" opacity="${p3}"/>`+tx(cx-16,(cy+y)/2+6,'d','#6c4cf1',p3,18);
+  const p2=ap(2);s+=tx((cx+ax)/2-14,(cy+y)/2+22,'r','#d93a52',p2)+tx((cx+bx)/2+14,(cy+y)/2+22,'r','#d93a52',p2);
+  const p5=ap(5);if(p5>0)s+=`<g opacity="${p5}" stroke="#1f1b4d" stroke-width="3" stroke-linecap="round"><line x1="${f((ax+cx)/2)}" y1="${f(y-9)}" x2="${f((ax+cx)/2)}" y2="${f(y+9)}"/><line x1="${f((bx+cx)/2)}" y1="${f(y-9)}" x2="${f((bx+cx)/2)}" y2="${f(y+9)}"/></g>`;
+  s+=`<circle cx="${cx}" cy="${cy}" r="5.5" fill="#1f1b4d"/>`+tx(cx-14,cy+22,'O')+tx(ax-14,y-8,'A')+tx(bx+14,y-8,'B');
+  if(lv>=1)s+=`<circle cx="${f(ax)}" cy="${f(y)}" r="6" fill="#0fb5a5" stroke="#fff" stroke-width="2"/><circle cx="${f(bx)}" cy="${f(y)}" r="6" fill="#0fb5a5" stroke="#fff" stroke-width="2"/>`;
+  if(lv>=3)s+=`<circle cx="${cx}" cy="${f(y)}" r="5" fill="#6c4cf1" stroke="#fff" stroke-width="2"/>`+tx(cx+16,y-8,'M');
+  if(lv>=5&&!fold.on)s+=tx(cx,52,'AM = MB ✓','#0a8f83',1,24);
+  if(fold.on){
+    const e=t-fold.t0;let sc;
+    if(e<1.6)sc=Math.cos(Math.PI*e/1.6);else if(e<3.4)sc=-1;else if(e<5)sc=-Math.cos(Math.PI*(e-3.4)/1.6);else{fold.on=false;sc=1}
+    s+=`<line x1="${cx}" y1="${cy-Rr-14}" x2="${cx}" y2="${cy+Rr+14}" stroke="#6c4cf1" stroke-width="2.5" stroke-dasharray="8 6"/>`;
+    s+=`<clipPath id="rh"><rect x="${cx}" y="0" width="${cx+20}" height="430"/></clipPath><g transform="translate(${cx} 0) scale(${f(sc)} 1) translate(${-cx} 0)"><g clip-path="url(#rh)"><circle cx="${cx}" cy="${cy}" r="${Rr}" fill="#0fb5a5" fill-opacity=".38" stroke="#0a8f83" stroke-width="5"/><line x1="${cx}" y1="${f(y)}" x2="${f(bx)}" y2="${f(y)}" stroke="#067a6f" stroke-width="6"/><line x1="${cx}" y1="${cy}" x2="${f(bx)}" y2="${f(y)}" stroke="#067a6f" stroke-width="4"/><circle cx="${f(bx)}" cy="${f(y)}" r="9" fill="#ffc533" stroke="#1f1b4d" stroke-width="2.5"/></g></g>`;
+    s+=tx(cx,30,sc<-0.97?'B lands exactly on A, so AM = MB!':sc>0.97?'Fold the right half over the line OM…':'Folding…','#6c4cf1',1,19);
+  }
+  stage2.innerHTML=s;
+}
+
+/* ---------- Section 3 ---------- */
+const stage3=$('#stage3'),stage3p=$('#stage3p'),S3={theta:105,auto:true,drag:false};
+const ang=(v,a,b)=>{const u=[a[0]-v[0],a[1]-v[1]],w=[b[0]-v[0],b[1]-v[1]];return Math.acos(Math.max(-1,Math.min(1,(u[0]*w[0]+u[1]*w[1])/(Math.hypot(...u)*Math.hypot(...w)))))/RAD};
+function angArc(v,a,b,rad,col,lab,labCol){
+  const a1=Math.atan2(a[1]-v[1],a[0]-v[0]),a2=Math.atan2(b[1]-v[1],b[0]-v[0]);let df=a2-a1;while(df>Math.PI)df-=2*Math.PI;while(df<=-Math.PI)df+=2*Math.PI;
+  const x1=v[0]+rad*Math.cos(a1),y1=v[1]+rad*Math.sin(a1),x2=v[0]+rad*Math.cos(a1+df),y2=v[1]+rad*Math.sin(a1+df),mid=a1+df/2;
+  return `<path d="M${f(v[0])} ${f(v[1])} L${f(x1)} ${f(y1)} A${rad} ${rad} 0 0 ${df>0?1:0} ${f(x2)} ${f(y2)} Z" fill="${col}" fill-opacity=".45" stroke="${col}" stroke-width="2"/>`+(lab?`<text x="${f(v[0]+(rad+16)*Math.cos(mid))}" y="${f(v[1]+(rad+16)*Math.sin(mid)+5)}" text-anchor="middle" font-size="16" fill="${labCol||col}" class="lbl">${lab}</text>`:'');
+}
+const lbl3=(x,y,s,c,sz,op)=>`<text x="${f(x)}" y="${f(y)}" text-anchor="middle" font-size="${sz||19}" fill="${c||'#1f1b4d'}" opacity="${op==null?1:op}" class="lbl">${s}</text>`;
+function svgPt(svg,e){const r=svg.getBoundingClientRect();return [(e.clientX-r.left)*420/r.width,(e.clientY-r.top)*430/r.height]}
+function dragTo(e){const [x,y]=svgPt(stage3,e);let th=Math.atan2(215-y,x-210)/RAD;if(th<0)th+=360;const m=Math.min(th%180,180-th%180);if(m<5)th=th<90||(th>180&&th<270)?(th>180?185:5):(th>180?355:175);S3.theta=th}
+stage3.addEventListener('pointerdown',e=>{S3.drag=true;S3.auto=false;$('#auto3').textContent='▶ Auto-move P';stage3.setPointerCapture(e.pointerId);stage3.style.cursor='grabbing';dragTo(e)});
+stage3.addEventListener('pointermove',e=>{if(S3.drag)dragTo(e)});
+['pointerup','pointercancel'].forEach(n=>stage3.addEventListener(n,()=>{S3.drag=false;stage3.style.cursor='grab'}));
+$('#auto3').onclick=()=>{S3.auto=!S3.auto;$('#auto3').textContent=S3.auto?'⏸ Stop auto-move':'▶ Auto-move P'};
+function draw3(t){
+  const cx=210,cy=215,Rr=140;
+  if(S3.auto&&!S3.drag)S3.theta=90+66*Math.sin(t*.9);
+  const th=S3.theta*RAD,A=[cx-Rr,cy],B=[cx+Rr,cy],Pp=[cx+Rr*Math.cos(th),cy-Rr*Math.sin(th)];
+  const aP=ang(Pp,A,B),aA=ang(A,Pp,B),aB=ang(B,Pp,A);
+  const ua=[A[0]-Pp[0],A[1]-Pp[1]],ub=[B[0]-Pp[0],B[1]-Pp[1]],la=Math.hypot(...ua),lb=Math.hypot(...ub),q=18,u=[ua[0]/la*q,ua[1]/la*q],v=[ub[0]/lb*q,ub[1]/lb*q];
+  let s=`<circle cx="${cx}" cy="${cy}" r="${Rr}" fill="#f1ecff" stroke="#1f1b4d" stroke-width="3.5"/>`;
+  s+=`<polygon points="${A} ${B} ${f(Pp[0])},${f(Pp[1])}" fill="#ffc533" fill-opacity=".3"/>`;
+  s+=angArc(A,Pp,B,40,'#ff5d73',f(aA)+'°')+angArc(B,Pp,A,40,'#0fb5a5',f(aB)+'°');
+  s+=`<line x1="${cx}" y1="${cy}" x2="${f(Pp[0])}" y2="${f(Pp[1])}" stroke="#1f1b4d" stroke-width="2" stroke-dasharray="5 5" opacity=".35"/>`;
+  s+=`<line x1="${A[0]}" y1="${A[1]}" x2="${B[0]}" y2="${B[1]}" stroke="#6c4cf1" stroke-width="7" stroke-linecap="round"/>`;
+  s+=`<line x1="${A[0]}" y1="${A[1]}" x2="${f(Pp[0])}" y2="${f(Pp[1])}" stroke="#ff5d73" stroke-width="5" stroke-linecap="round"/><line x1="${B[0]}" y1="${B[1]}" x2="${f(Pp[0])}" y2="${f(Pp[1])}" stroke="#0fb5a5" stroke-width="5" stroke-linecap="round"/>`;
+  s+=`<polyline points="${f(Pp[0]+u[0])},${f(Pp[1]+u[1])} ${f(Pp[0]+u[0]+v[0])},${f(Pp[1]+u[1]+v[1])} ${f(Pp[0]+v[0])},${f(Pp[1]+v[1])}" fill="#fff" stroke="#1f1b4d" stroke-width="2.2"/>`;
+  s+=`<circle cx="${f(Pp[0])}" cy="${f(Pp[1])}" r="${14+3*Math.sin(t*5)}" fill="none" stroke="#ffc533" stroke-width="3" opacity=".8"/><circle cx="${f(Pp[0])}" cy="${f(Pp[1])}" r="9" fill="#ffc533" stroke="#1f1b4d" stroke-width="3"/>`;
+  s+=`<circle cx="${cx}" cy="${cy}" r="5" fill="#1f1b4d"/>`+lbl3(A[0]-16,A[1]+7,'A')+lbl3(B[0]+16,B[1]+7,'B')+lbl3(cx,cy+24,'O')+lbl3(Pp[0]+(Pp[0]>cx?18:-18),Pp[1]+(Pp[1]<cy?-10:22),'P');
+  s+=lbl3(cx,34,'Angle APB = '+f(aP)+'°','#6c4cf1',24);
+  stage3.innerHTML=s;
+  $('#read3').innerHTML=`<span>∠PAB = <b style="color:#d93a52">${f(aA)}°</b></span><span>∠PBA = <b style="color:#0a8f83">${f(aB)}°</b></span><span class="eq" style="color:#6c4cf1">∠APB = ${f(aP)}° &nbsp;·&nbsp; ∠PAB + ∠PBA = ${f(aA+aB)}°</span>`;
+}
+/* proof */
+function renderSteps3(){$('#steps3').innerHTML=S3_STEPS.map((s,i)=>`<li data-s3="${i}" class="${i===S.p3step?'cur':i<S.p3step?'past':''}">${i+1}. ${s}</li>`).join('')}
+let s3auto=null;
+function setStep3(n){S.p3step=Math.max(0,Math.min(4,n));stepT3=(performance.now()-t0)/1000;renderSteps3();touch()}
+$('#steps3').addEventListener('click',e=>{const li=e.target.closest('li');if(li){clearInterval(s3auto);setStep3(+li.dataset.s3)}});
+$('#prev3').onclick=()=>{clearInterval(s3auto);setStep3(S.p3step-1)};
+$('#next3').onclick=()=>{clearInterval(s3auto);setStep3(S.p3step+1)};
+$('#play3').onclick=()=>{clearInterval(s3auto);setStep3(0);s3auto=setInterval(()=>{if(S.p3step>=4)clearInterval(s3auto);else setStep3(S.p3step+1)},3000)};
+function draw3p(t){
+  const cx=210,cy=190,Rr=125,th=118*RAD,A=[cx-Rr,cy],B=[cx+Rr,cy],O=[cx,cy],Pp=[cx+Rr*Math.cos(th),cy-Rr*Math.sin(th)],lv=S.p3step,ap=n=>lv>n?1:lv===n?Math.min(1,(t-stepT3)/.8):0;
+  let s=`<circle cx="${cx}" cy="${cy}" r="${Rr}" fill="#f1ecff" stroke="#1f1b4d" stroke-width="3"/><polygon points="${A} ${B} ${f(Pp[0])},${f(Pp[1])}" fill="#ffc533" fill-opacity=".28"/>`;
+  const l=(p,q,c,w,o,ex)=>`<line x1="${f(p[0])}" y1="${f(p[1])}" x2="${f(q[0])}" y2="${f(q[1])}" stroke="${c}" stroke-width="${w}" stroke-linecap="round" opacity="${o}" ${ex||''}/>`;
+  s+=l(A,B,'#6c4cf1',6,1)+l(A,Pp,'#ff5d73',4,ap(0))+l(B,Pp,'#0fb5a5',4,ap(0));
+  s+=l(O,Pp,'#1f1b4d',3,ap(1),'stroke-dasharray="6 5"');
+  const p1=ap(1);if(p1>0)s+=lbl3((cx+A[0])/2,cy+24,'r','#d93a52',p1,17)+lbl3((cx+B[0])/2,cy+24,'r','#d93a52',p1,17)+lbl3((cx+Pp[0])/2+14,(cy+Pp[1])/2,'r','#d93a52',p1,17);
+  const p2=ap(2);if(p2>0)s+=`<g opacity="${p2}">`+angArc(A,Pp,B,34,'#ff5d73','x')+angArc(Pp,A,O,30,'#ff5d73','x')+angArc(B,Pp,A,34,'#0fb5a5','y')+angArc(Pp,O,B,30,'#0fb5a5','y')+`</g>`;
+  const p3=ap(3);if(p3>0)s+=lbl3(cx,cy+68,'x + y + (x + y) = 180°','#1f1b4d',p3,19);
+  const p4=ap(4);if(p4>0){const ua=[A[0]-Pp[0],A[1]-Pp[1]],ub=[B[0]-Pp[0],B[1]-Pp[1]],la=Math.hypot(...ua),lb=Math.hypot(...ub),q=16,u=[ua[0]/la*q,ua[1]/la*q],v=[ub[0]/lb*q,ub[1]/lb*q];
+    s+=`<polyline points="${f(Pp[0]+u[0])},${f(Pp[1]+u[1])} ${f(Pp[0]+u[0]+v[0])},${f(Pp[1]+u[1]+v[1])} ${f(Pp[0]+v[0])},${f(Pp[1]+v[1])}" fill="#fff" stroke="#1f1b4d" stroke-width="2.2" opacity="${p4}"/>`+lbl3(cx,cy+96,'x + y = 90°, so ∠APB = 90° ✓','#6c4cf1',p4,20)}
+  s+=`<circle cx="${cx}" cy="${cy}" r="4.5" fill="#1f1b4d"/>`+lbl3(A[0]-16,A[1]+7,'A')+lbl3(B[0]+16,B[1]+7,'B')+lbl3(Pp[0]-4,Pp[1]-12,'P')+lbl3(cx+14,cy+22,'O','#1f1b4d',16);
+  stage3p.innerHTML=s;
+}
+
+/* ---------- Section 4: assessment ---------- */
+let lastEvt=null;
+function qs(i){return S.quiz[i]||(S.quiz[i]={a:0,w:[],d:false,sc:0})}
+function analyse(){
+  const by={1:{n:0,sum:0,first:0},2:{n:0,sum:0,first:0},3:{n:0,sum:0,first:0}};let total=0,first=0;
+  Q.forEach((q,i)=>{const st=S.quiz[i];by[q.sec].n++;if(st&&st.d){total+=st.sc;by[q.sec].sum+=st.sc;if(st.a===1){first++;by[q.sec].first++}}});
+  const secs=[1,2,3].map(k=>({k,pct:Math.round(by[k].sum/(by[k].n*10)*100),first:by[k].first,n:by[k].n}));
+  const pct=total;let msg;
+  if(pct>=90)msg='Outstanding! You have mastered the symmetry properties of circles.';
+  else if(pct>=80)msg='Great work! Your understanding is solid, with just a few details to polish.';
+  else if(pct>=70)msg='Good effort! Look at the topic with the lowest percentage and try it again.';
+  else msg='Keep going! The lessons above will help, and every retry makes you stronger.';
+  const best=secs.slice().sort((a,b)=>b.pct-a.pct)[0],weak=secs.slice().sort((a,b)=>a.pct-b.pct)[0];
+  return {total,first,secs,msg,best,weak,tough:Q.map((q,i)=>({q,i,st:S.quiz[i]})).filter(x=>x.st&&x.st.a>1)};
+}
+const band=p=>p>=90?['Strong','t-s']:p>=80?['Good','t-g']:['Needs practice','t-p'];
+function renderQuiz(){
+  const box=$('#quizBox');
+  if(S.view==='res'&&doneQ()===10){renderResults(box);return}
+  S.view='q';
+  const i=S.qi,q=Q[i],st=qs(i),total=Q.reduce((a,_,j)=>a+((S.quiz[j]&&S.quiz[j].d)?S.quiz[j].sc:0),0),allDone=doneQ()===10;
+  let h=`<div class="qtop"><div class="qdots">${Q.map((_,j)=>{const s=S.quiz[j];return `<button class="qdot ${j===i?'cur':''} ${s&&s.d?'ok':s&&s.a?'try':''}" data-q="${j}" aria-label="Question ${j+1}">${j+1}</button>`}).join('')}</div><div class="qscore">⭐ <b>${total}</b> / 100</div></div>`;
+  h+=`<div class="card"><div class="qmeta"><span class="chip sec${q.sec}">Section ${q.sec} · ${SECN[q.sec]}</span><span class="attempts">Question ${i+1} of 10 · ${st.d?'solved in '+st.a+(st.a===1?' try':' tries'):'attempt '+(st.a+1)+' (worth '+(10-st.a)+' pts)'}</span></div>`;
+  h+=`<div class="qtext">${q.q}</div>${q.fig?`<div class="qfig">${q.fig}</div>`:''}<div class="opts">`;
+  h+=q.o.map((o,k)=>{const wr=st.w.includes(k),gd=st.d&&k===q.ans,shk=lastEvt&&lastEvt.q===i&&lastEvt.k===k&&lastEvt.type==='bad';
+    return `<button class="opt ${wr?'wrong':''} ${gd?'good':''} ${shk?'shake':''}" data-opt="${k}" ${wr||st.d?'disabled':''}><span class="L">${'ABCD'[k]}</span><span>${o}</span><span class="mark">${gd?'✓':wr?'✗':''}</span></button>`}).join('')+`</div>`;
+  if(st.d)h+=`<div class="fb yes"><span class="pts">+${st.sc} points</span> &nbsp;<b>${['Perfect on the first try!','Nice recovery!','Persistence pays off!','You got there!'][st.a-1]}</b><br>${q.exp}</div>`;
+  else if(st.a>0)h+=`<div class="fb bad"><b>Not quite. Try again!</b> The next correct answer is worth ${10-st.a} points.<br>💡 Hint: ${q.hint}</div>`;
+  h+=`<div class="qnav"><button class="btn" data-qnav="-1" ${i===0?'disabled':''}>← Back</button>`;
+  if(allDone)h+=`<button class="btn primary" id="seeRes">📊 See my analysis</button>`;
+  else if(st.d)h+=`<button class="btn primary" data-qnav="1">Next question →</button>`;
+  else h+=`<span></span>`;
+  h+=`</div></div>`;
+  box.innerHTML=h;
+  if(lastEvt&&lastEvt.type==='good'){const el=$('.opt.good',box);if(el){const r=el.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2,lastEvt.sc===10?110:70)}}
+  lastEvt=null;
+}
+$('#quizBox').addEventListener('click',e=>{
+  const o=e.target.closest('[data-opt]'),d=e.target.closest('[data-q]'),n=e.target.closest('[data-qnav]');
+  if(o){
+    const i=S.qi,q=Q[i],st=qs(i),k=+o.dataset.opt;if(st.d||st.w.includes(k))return;
+    st.a++;
+    if(k===q.ans){st.d=true;st.sc=11-st.a;lastEvt={q:i,k,type:'good',sc:st.sc}}else{st.w.push(k);lastEvt={q:i,k,type:'bad'}}
+    touch();renderQuiz();
+  }
+  if(d){S.qi=+d.dataset.q;touch();renderQuiz()}
+  if(n){S.qi=Math.max(0,Math.min(9,S.qi+(+n.dataset.qnav)));touch();renderQuiz()}
+  if(e.target.id==='seeRes'){S.view='res';touch();renderQuiz();burst(innerWidth/2,innerHeight/3,120);scrollTo({top:0,behavior:'smooth'})}
+  if(e.target.id==='reviewQ'){S.view='q';S.qi=0;touch();renderQuiz()}
+  if(e.target.id==='pdf2')makePDF();
+  const g=e.target.closest('[data-goto]');if(g)go(g.dataset.goto);
+  if(e.target.id==='retake'){
+    const b=e.target;
+    if(!b.dataset.sure){b.dataset.sure='1';b.textContent='Click again to confirm (this clears your answers)';setTimeout(()=>{if(b.isConnected){delete b.dataset.sure;b.textContent='🔄 Retake assessment'}},4000)}
+    else{S.history.push({t:Date.now(),total:analyse().total});S.quiz={};S.qi=0;S.view='q';touch();renderQuiz();toast('Fresh start! Good luck.')}
+  }
+});
+function renderResults(box){
+  const a=analyse(),circ=2*Math.PI*54;
+  let h=`<div class="card"><div class="res-top"><div style="text-align:center"><svg viewBox="0 0 140 140" width="180" height="180"><circle cx="70" cy="70" r="54" fill="none" stroke="#eee9ff" stroke-width="14"/><circle class="ring" cx="70" cy="70" r="54" fill="none" stroke="url(#rg)" stroke-width="14" stroke-linecap="round" stroke-dasharray="${f(a.total/100*circ)} 340" transform="rotate(-90 70 70)"/><defs><linearGradient id="rg"><stop offset="0" stop-color="#ffc533"/><stop offset="1" stop-color="#ff5d73"/></linearGradient></defs><text x="70" y="68" text-anchor="middle" font-size="34" font-family="Fredoka" font-weight="700" fill="#1f1b4d">${a.total}</text><text x="70" y="90" text-anchor="middle" font-size="14" font-weight="800" fill="#6b6896">out of 100</text></svg></div>`;
+  h+=`<div><h2>${S.name}, here is your analysis</h2><p style="font-weight:800;font-size:1.1rem;margin:4px 0">${a.msg}</p><p style="font-weight:700;color:#6b6896">First-try correct: <b>${a.first}</b> of 10 questions${S.history.length?` · Previous attempt: ${S.history[S.history.length-1].total}/100`:''}</p></div></div></div>`;
+  h+=`<div class="card"><h3>Your results by section</h3>`+a.secs.map(s=>{const b=band(s.pct),col=['','#ff5d73','#0fb5a5','#6c4cf1'][s.k];return `<div><b>Section ${s.k} · ${SECN[s.k]}</b><span class="tag ${b[1]}">${b[0]}</span> <span style="float:right;font-weight:800">${s.pct}% · ${s.first}/${s.n} first-try</span><div class="sbar"><i style="width:${s.pct}%;background:${col}"></i></div></div>`}).join('')+`</div>`;
+  h+=`<div class="card"><h3>What this tells us</h3><p>⭐ <b>Strongest topic:</b> Section ${a.best.k} (${SECN[a.best.k]}), ${a.best.pct}%.</p>`;
+  if(a.weak.pct<100)h+=`<p>🎯 <b>Focus next on:</b> Section ${a.weak.k} (${SECN[a.weak.k]}), ${a.weak.pct}%.<br><span style="color:#6b6896;font-weight:700">${SEC_TIPS[a.weak.k]}</span> <button class="btn small" data-goto="s${a.weak.k}">Review Section ${a.weak.k}</button></p>`;
+  else h+=`<p>🏆 Every answer was correct on the first try. Amazing!</p>`;
+  if(a.tough.length)h+=`<p style="margin-bottom:4px"><b>Questions that needed more than one try:</b></p><ul style="margin:0;padding-left:20px">`+a.tough.map(x=>`<li><b>Q${x.i+1}</b> (${x.st.a} tries, Section ${x.q.sec}): ${x.q.exp}</li>`).join('')+`</ul>`;
+  h+=`</div><div class="card"><h3>Question summary</h3><table><tr><th>Q</th><th>Section</th><th>Tries</th><th>Score</th></tr>`+Q.map((q,i)=>{const s=S.quiz[i];return `<tr><td>${i+1}</td><td>${q.sec} · ${SECN[q.sec]}</td><td>${s.a}</td><td><b>${s.sc}</b>/10</td></tr>`}).join('')+`</table></div>`;
+  h+=`<div class="finish"><button class="btn" id="reviewQ">👀 Review questions</button><button class="btn accent" id="pdf2">📄 Download PDF</button><button class="btn" id="retake">🔄 Retake assessment</button></div>`;
+  box.innerHTML=h;
+}
+$('#btnPdf').onclick=()=>makePDF();
+
+/* ---------- PDF ---------- */
+const PC={ink:[31,27,77],violet:[108,76,241],teal:[15,181,165],coral:[255,93,115],sun:[255,197,51],sky:[46,155,255],orange:[255,138,61],pink:[255,79,163],green:[47,191,113],muted:[107,104,150],soft:[241,236,255]};
+function cl(s){
+  const map={'∠':'angle ','√':'sqrt','⊥':' perpendicular to ','→':'->','⇒':'=>','∴':'So ','✓':'(ok)','≈':'~','≠':'!=','−':'-','–':'-','—':'-','“':'"','”':'"','‘':"'",'’':"'",'…':'...','…':'...','▶':'>'};
+  return String(s).replace(/<br\s*\/?>/gi,' ').replace(/<[^>]+>/g,'').replace(/&nbsp;/g,' ').replace(/[^\x00-\xff]/g,m=>map[m]!==undefined?map[m]:'');
+}
+async function makePDF(){
+  const dl=await getDL();
+  if(!window.jspdf){toast('The PDF tool could not load. Check your internet connection.');return}
+  if(!dl){toast('Downloads are not available in this view. Open the page in your browser to download.');return}
+  toast('Preparing your PDF…');
+  let blob;
+  try{blob=buildPDF()}catch(err){console.error(err);toast('Sorry, the PDF could not be built.');return}
+  try{await dl.save({filename:'Circle-Symmetry_'+S.name.replace(/\W+/g,'_')+'_'+S.cls.replace(/\W+/g,'_')+'.pdf',data:blob});toast('✅ PDF ready')}
+  catch(e){if(!e||e.code!=='declined')toast('Could not save the PDF.')}
+}
+function buildPDF(){
+  const {jsPDF}=window.jspdf,doc=new jsPDF({unit:'mm',format:'a4'}),W=210,H=297,M=15,CW=W-2*M;let y=M;
+  const ensure=h=>{if(y+h>H-16){doc.addPage();y=M}};
+  const para=(txt,o={})=>{const size=o.size||10.5,ind=o.indent||0,lh=size*.5;doc.setFont('helvetica',o.bold?'bold':'normal');doc.setFontSize(size);doc.setTextColor(...(o.color||PC.ink));
+    for(const ln of doc.splitTextToSize(cl(txt),CW-ind)){ensure(lh+1);doc.text(ln,M+ind,y+lh*.8);y+=lh}y+=o.gap==null?1.6:o.gap};
+  const banner=(t,c)=>{ensure(24);doc.setFillColor(...c);doc.roundedRect(M,y,CW,10,2.5,2.5,'F');doc.setFont('helvetica','bold');doc.setFontSize(14);doc.setTextColor(255,255,255);doc.text(cl(t),M+4,y+7);y+=15};
+  const line=(x1,y1,x2,y2,c,w)=>{doc.setDrawColor(...c);doc.setLineWidth(w);doc.line(x1,y1,x2,y2)};
+  const txt=(s,x,yy,c,sz)=>{doc.setFont('helvetica','bold');doc.setFontSize(sz||9);doc.setTextColor(...c);doc.text(cl(s),x,yy,{align:'center'})};
+  const arc=(cx,cy,r,a0,a1,c,w)=>{let px=null,py=null;for(let i=0;i<=40;i++){const a=(a0+(a1-a0)*i/40)*RAD,x=cx+r*Math.cos(a),yy=cy-r*Math.sin(a);if(px!==null)line(px,py,x,yy,c,w);px=x;py=yy}};
+  const circ=(cx,cy,r)=>{doc.setFillColor(...PC.soft);doc.setDrawColor(...PC.ink);doc.setLineWidth(.7);doc.circle(cx,cy,r,'FD')};
+  const dot=(x,yy,c,r)=>{doc.setFillColor(...c);doc.circle(x,yy,r||1.1,'F')};
+  /* figures */
+  const figAll=(cx,cy,r)=>{circ(cx,cy,r);const p=(a,rr)=>[cx+(rr||r)*Math.cos(a*RAD),cy-(rr||r)*Math.sin(a*RAD)];
+    arc(cx,cy,r,0,360,PC.green,1.2);arc(cx,cy,r,200,260,PC.pink,1.8);line(...p(180),...p(0),PC.violet,.9);line(cx,cy,...p(-50),PC.coral,.9);line(...p(200),...p(260),PC.teal,.9);
+    const t=p(30),dx=-Math.sin(30*RAD),dy=-Math.cos(30*RAD),e=r*.72;line(t[0]-dx*e,t[1]-dy*e,t[0]+dx*e,t[1]+dy*e,PC.orange,.9);
+    const a=p(165),b=p(105),vx=b[0]-a[0],vy=b[1]-a[1],l=Math.hypot(vx,vy);line(a[0]-vx/l*r*.28,a[1]-vy/l*r*.28,b[0]+vx/l*r*.28,b[1]+vy/l*r*.28,PC.sky,.9);
+    dot(cx,cy,PC.ink,1.2);txt('O',cx-3,cy+5,PC.ink,9);txt('diameter',cx+r*.55,cy-2,PC.violet,8);txt('radius',cx+r*.5,cy+r*.55,PC.coral,8);txt('chord',cx-r*.5,cy+r*.62,PC.teal,8);txt('tangent',cx+r*1.08,cy-r*.9,PC.orange,8);txt('secant',cx-r*.55,cy-r*1.12,PC.sky,8);txt('minor arc',cx-r*.95,cy+r*1.2,PC.pink,8);txt('major arc',cx-r*1.25,cy+r*.25,PC.green,8)};
+  const figChordP=(cx,cy,r,dF)=>{circ(cx,cy,r);const d=dF*r,h=Math.sqrt(r*r-d*d),yy=cy-d;line(cx-h,yy,cx+h,yy,PC.teal,1.1);line(cx,cy,cx-h,yy,PC.coral,.7);line(cx,cy,cx+h,yy,PC.coral,.7);line(cx,cy,cx,yy,PC.violet,.8);
+    doc.setDrawColor(...PC.ink);doc.setLineWidth(.4);doc.lines([[2.2,0],[0,-2.2]],cx,yy+2.2,[1,1],'S');dot(cx,cy,PC.ink);txt('O',cx+3,cy+4,PC.ink);txt('A',cx-h-3,yy-1.5,PC.ink);txt('B',cx+h+3,yy-1.5,PC.ink);txt('M',cx+3,yy-1.8,PC.ink)};
+  const figSemiP=(cx,cy,r,th)=>{circ(cx,cy,r);const P=[cx+r*Math.cos(th*RAD),cy-r*Math.sin(th*RAD)],A=[cx-r,cy],B=[cx+r,cy];line(...A,...B,PC.violet,1.2);line(...A,...P,PC.coral,.9);line(...B,...P,PC.teal,.9);
+    const ua=[A[0]-P[0],A[1]-P[1]],ub=[B[0]-P[0],B[1]-P[1]],la=Math.hypot(...ua),lb=Math.hypot(...ub),q=3,u=[ua[0]/la*q,ua[1]/la*q],v=[ub[0]/lb*q,ub[1]/lb*q];
+    line(P[0]+u[0],P[1]+u[1],P[0]+u[0]+v[0],P[1]+u[1]+v[1],PC.ink,.4);line(P[0]+v[0],P[1]+v[1],P[0]+u[0]+v[0],P[1]+u[1]+v[1],PC.ink,.4);
+    dot(cx,cy,PC.ink);txt('A',A[0]-3,A[1]+1.5,PC.ink);txt('B',B[0]+3,B[1]+1.5,PC.ink);txt('P',P[0],P[1]-2.5,PC.ink);txt('O',cx,cy+4,PC.ink);txt('90 deg',P[0],P[1]+8,PC.violet,8)};
+
+  /* cover */
+  doc.setFillColor(...PC.violet);doc.rect(0,0,W,46,'F');doc.setFillColor(...PC.teal);doc.rect(0,40,W,6,'F');
+  doc.setFont('helvetica','bold');doc.setFontSize(24);doc.setTextColor(255,255,255);doc.text('Circle Symmetry Lab',M,20);
+  doc.setFontSize(12);doc.text('IGCSE Mathematics 0580 - Symmetry properties of circles',M,29);
+  doc.setFontSize(11);doc.text(cl('Student: '+S.name+'   |   Class: '+S.cls+'   |   '+new Date().toLocaleDateString()),M,37);
+  y=56;
+  const secs=[1,2,3].map(i=>S.done[i]?'completed':'not marked complete').map((x,i)=>'Section '+(i+1)+': '+x).join('   |   ');
+  para(secs+'   |   Assessment: '+doneQ()+'/10 questions solved',{size:9.5,color:PC.muted,gap:5});
+
+  banner('Section 1 - Parts of a circle',PC.coral);
+  figAll(W-M-32,y+30,24);
+  const startY=y;for(const t of TERMS){para(t.name,{bold:true,size:11,color:[...hex(t.color)],gap:.3});para(t.def,{size:10,indent:3,gap:.6});para('Remember: '+t.facts.join(' '),{size:9,indent:3,color:PC.muted,gap:2.2})}
+  void startY;
+
+  ensure(60);banner('Section 2 - The perpendicular bisector of a chord',PC.teal);
+  figChordP(W-M-30,y+28,24,.55);
+  para('1. The perpendicular from the centre of a circle to a chord bisects the chord.',{bold:true,size:10.5,gap:.8});
+  para('2. Converse: a line from the centre to the midpoint of a chord is perpendicular to the chord.',{bold:true,size:10.5,gap:.8});
+  para('3. The perpendicular bisector of any chord passes through the centre of the circle.',{bold:true,size:10.5,gap:.8});
+  para('Key formula (Pythagoras): r^2 = d^2 + (half chord)^2',{size:10.5,color:PC.violet,bold:true,gap:3});
+  para('Why it works:',{bold:true,size:10.5,gap:.5});S2_STEPS.forEach((s,i)=>para((i+1)+'. '+s,{size:9.5,indent:3,gap:.7}));y+=22;
+  EX2.forEach(ex=>{ensure(30);para('Example '+ex.n+': '+ex.title,{bold:true,size:10.5,color:PC.teal,gap:.5});para(ex.q,{size:10,gap:.6});ex.steps.forEach((s,i)=>para((i+1)+') '+s,{size:9.5,indent:4,gap:.4}));y+=2});
+
+  ensure(60);banner('Section 3 - Angle in a semicircle',PC.violet);
+  figSemiP(W-M-30,y+26,24,108);
+  para('The angle in a semicircle is 90 degrees: if AB is a diameter and P is on the circle, angle APB = 90 degrees.',{bold:true,size:10.5,gap:.8});
+  para('Converse: if a triangle inscribed in a circle has a 90 degree angle, the side opposite it is a diameter.',{bold:true,size:10.5,gap:3});
+  para('Proof:',{bold:true,size:10.5,gap:.5});S3_STEPS.forEach((s,i)=>para((i+1)+'. '+s,{size:9.5,indent:3,gap:.7}));y+=10;
+  EX3.forEach(ex=>{ensure(30);para('Example '+ex.n+': '+ex.title,{bold:true,size:10.5,color:PC.violet,gap:.5});para(ex.q,{size:10,gap:.6});ex.steps.forEach((s,i)=>para((i+1)+') '+s,{size:9.5,indent:4,gap:.4}));y+=2});
+
+  doc.addPage();y=M;banner('Section 4 - Assessment results',PC.orange);
+  const answered=doneQ();
+  if(!answered)para('The assessment has not been started yet.',{color:PC.muted});
+  else{
+    const a=analyse();
+    para('Total score: '+a.total+' / 100   (first-try correct: '+a.first+' of 10'+(answered<10?'; only '+answered+' questions solved so far':'')+')',{bold:true,size:12,color:PC.violet,gap:3});
+    doc.setFillColor(...PC.soft);doc.rect(M,y,CW,7,'F');doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor(...PC.ink);
+    doc.text('Q',M+2,y+5);doc.text('Section',M+12,y+5);doc.text('Tries',M+95,y+5);doc.text('Score',M+115,y+5);doc.text('Correct answer',M+135,y+5);y+=8;
+    Q.forEach((q,i)=>{ensure(8);const s=S.quiz[i];doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(...PC.ink);
+      doc.text(String(i+1),M+2,y+4);doc.text(cl(q.sec+' - '+SECN[q.sec]),M+12,y+4);doc.text(s&&s.a?String(s.a):'-',M+97,y+4);doc.text(s&&s.d?s.sc+' / 10':'-',M+115,y+4);doc.text(s&&s.d?cl(q.o[q.ans]):'not solved',M+135,y+4);
+      doc.setDrawColor(230,225,255);doc.setLineWidth(.2);doc.line(M,y+6,M+CW,y+6);y+=7});
+    y+=4;para('Analysis',{bold:true,size:13,color:PC.orange,gap:1});
+    para(a.msg,{bold:true,gap:2});
+    a.secs.forEach(s=>para('Section '+s.k+' ('+SECN[s.k]+'): '+s.pct+'% - '+band(s.pct)[0]+' ('+s.first+'/'+s.n+' correct on first try)',{size:10,gap:.8}));
+    y+=2;if(a.weak.pct<100)para('Focus next on Section '+a.weak.k+' ('+SECN[a.weak.k]+'). '+SEC_TIPS[a.weak.k],{size:10,color:PC.muted,gap:2});
+    if(a.tough.length){para('Questions that needed more than one try:',{bold:true,size:10,gap:.6});a.tough.forEach(x=>para('Q'+(x.i+1)+' ('+x.st.a+' tries): '+x.q.exp,{size:9.5,indent:3,gap:.8}))}
+  }
+  const n=doc.getNumberOfPages();
+  for(let i=1;i<=n;i++){doc.setPage(i);doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(...PC.muted);doc.text(cl('IGCSE Mathematics 0580 - Symmetry properties of circles - '+S.name+' ('+S.cls+')'),M,H-8);doc.text('Page '+i+' / '+n,W-M,H-8,{align:'right'})}
+  return doc.output('blob');
+}
+function hex(h){return [1,3,5].map(i=>parseInt(h.slice(i,i+2),16))}
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
